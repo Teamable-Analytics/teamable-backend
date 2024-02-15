@@ -11,10 +11,9 @@ from app.models.section import Section
 class UserRole(models.TextChoices):
     STUDENT = "S", _("Student")
     INSTRUCTOR = "I", _("Instructor")
-    TA = "T", _("TA")
 
 
-class Enrollment(TimeStampedModel):
+class CourseMember(TimeStampedModel):
     """
     Models a user's involvement in a section (or group).
     A user can be in many sections.
