@@ -10,6 +10,7 @@ class Project(BaseModel):
     project_set = models.ForeignKey(
         "ProjectSet", on_delete=models.CASCADE, related_name="projects"
     )
+    max_num_teams = models.IntegerField(null=True)  # null means no limit
 
 
 class ProjectSet(BaseModel):
