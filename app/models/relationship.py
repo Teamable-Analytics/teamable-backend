@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from app.models.base_models import TimeStampedModel
+from app.models.base_models import BaseModel
 from app.models.course_member import CourseMember
 
 
@@ -10,7 +10,7 @@ class RelationshipType(models.TextChoices):
     ENEMY = "E", _("enemy")
 
 
-class Relationship(TimeStampedModel):
+class Relationship(BaseModel):
     """
     Models an "IS-A" relationship between two enrolled users.
 

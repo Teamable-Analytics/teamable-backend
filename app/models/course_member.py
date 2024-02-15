@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from app.models.base_models import TimeStampedModel
+from app.models.base_models import BaseModel
 from django.utils.translation import gettext_lazy as _
 
 from app.models.course import Course
@@ -13,7 +13,7 @@ class UserRole(models.TextChoices):
     INSTRUCTOR = "I", _("Instructor")
 
 
-class CourseMember(TimeStampedModel):
+class CourseMember(BaseModel):
     """
     Models a user's involvement in a section (or group).
     A user can be in many sections.
