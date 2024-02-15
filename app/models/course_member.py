@@ -19,8 +19,10 @@ class CourseMember(BaseModel):
     A user can be in many sections.
     """
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    sections = models.ManyToManyField(Section)
-    course_fk = models.ForeignKey(Course, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="course_memberships"
+    )
+    sections = models.ManyToManyField(Section, related_name="section_members")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     role = models.CharField(max_length=1, choices=UserRole.choices)
     lms_id = models.CharField(max_length=100, blank=True)
