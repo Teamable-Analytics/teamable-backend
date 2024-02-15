@@ -1,10 +1,10 @@
 from django.db import models
 
-from app.models.base_models import TimeStampedModel
+from app.models.base_models import BaseModel
 from app.models.course import Course
 
 
-class Project(TimeStampedModel):
+class Project(BaseModel):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500, blank=True)
     project_set_fk = models.ForeignKey(
@@ -12,8 +12,8 @@ class Project(TimeStampedModel):
     )
 
 
-class ProjectSet(TimeStampedModel):
+class ProjectSet(BaseModel):
     name = models.CharField(max_length=100)
-    course_fk = models.ForeignKey(
-        Course, on_delete=models.CASCADE, verbose_name="course"
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name="project_sets"
     )
