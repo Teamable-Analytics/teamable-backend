@@ -7,7 +7,7 @@ from app.models.course import Course
 class Project(BaseModel):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500, blank=True)
-    project_set_fk = models.ForeignKey(
+    project = models.ForeignKey(
         "ProjectSet", on_delete=models.CASCADE, related_name="projects"
     )
 
