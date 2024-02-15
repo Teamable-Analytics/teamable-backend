@@ -14,15 +14,10 @@ class UserRole(models.TextChoices):
 
 
 class CourseMember(BaseModel):
-    """
-    Models a user's involvement in a section (or group).
-    A user can be in many sections.
-    """
-
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="course_memberships"
     )
     sections = models.ManyToManyField(Section, related_name="section_members")
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     role = models.CharField(max_length=1, choices=UserRole.choices)
-    lms_id = models.CharField(max_length=100, blank=True)
+    external_lms_id = models.CharField(max_length=100, blank=True)
