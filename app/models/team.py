@@ -44,6 +44,7 @@ class TeamSetTemplate(BaseModel):
 
 
 class TeamTemplate(BaseModel):
+    description = models.TextField()
     slug = models.UUIDField()
     number_of_teams = models.IntegerField()
     max_people = models.IntegerField()

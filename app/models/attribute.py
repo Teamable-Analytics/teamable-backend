@@ -2,7 +2,6 @@ from django.db import models
 
 from app.models.base_models import BaseModel
 from app.models.course_member import CourseMember
-from app.models.team import TeamSetTemplate
 
 
 class AttributeValueType(models.TextChoices):
@@ -16,7 +15,7 @@ class Attribute(BaseModel):
     value_type = models.CharField(max_length=50, choices=AttributeValueType.choices)
     max_selections = models.IntegerField()
     team_set_template = models.ForeignKey(
-        TeamSetTemplate, on_delete=models.CASCADE, null=True
+        "app.TeamSetTemplate", on_delete=models.CASCADE, null=True
     )
 
 
