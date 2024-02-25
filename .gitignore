@@ -2,5 +2,8 @@
 db.sqlite3
 __pycache__/
 
+### DB Volume ###
+/.data
+
 ### PyCharm ###
 .idea/
