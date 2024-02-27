@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import F
 
 from accounts.models import MyUser
 from app.models.base_models import BaseModel
