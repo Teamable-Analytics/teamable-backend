@@ -37,6 +37,10 @@ class TeamRequirement(BaseModel):
     team = models.ForeignKey(
         Team, on_delete=models.CASCADE, related_name="requirements"
     )
+    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)
+    operator = models.CharField(max_length=50, choices=RequirementOperator.choices)
+    subject = models.CharField(max_length=20, choices=RequirementSubject.choices)
+    options = models.ManyToManyField(AttributeOption)
 
 
 class TeamSetTemplate(BaseModel):
