@@ -5,6 +5,7 @@ from app.models.base_models import BaseModel
 from app.models.course import Course
 from app.models.section import Section
 
+
 class UserRole(models.TextChoices):
     STUDENT = "Student", "Student"
     INSTRUCTOR = "Instructor", "Instructor"
