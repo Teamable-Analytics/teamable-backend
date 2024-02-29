@@ -31,6 +31,9 @@ class Team(BaseModel):
     max_people = models.IntegerField()
     min_people = models.IntegerField()
     members = models.ManyToManyField(CourseMember, related_name="teams")
+    team_set = models.ForeignKey(
+        TeamSet, on_delete=models.CASCADE, related_name="teams"
+    )
 
 
 class TeamRequirement(BaseModel):
@@ -53,6 +56,9 @@ class TeamTemplate(BaseModel):
     number_of_teams = models.IntegerField()
     max_people = models.IntegerField()
     min_people = models.IntegerField()
+    team_set = models.ForeignKey(
+        TeamSetTemplate, on_delete=models.CASCADE, related_name="teams"
+    )
 
 
 class TeamTemplateRequirement(BaseModel):
