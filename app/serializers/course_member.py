@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
 from app.models.course_member import CourseMember
-from app.serializers.myuser import UserSerializer
-from app.serializers.myuser import StudentMemberSerializer
+from accounts.serializers import UserSerializer
+from accounts.serializers import StudentMemberSerializer
 from app.serializers.section import SectionSerializer
 
 
