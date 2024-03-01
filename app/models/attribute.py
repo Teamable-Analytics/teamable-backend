@@ -15,7 +15,13 @@ class Attribute(BaseModel):
     value_type = models.CharField(max_length=50, choices=AttributeValueType.choices)
     max_selections = models.IntegerField()
     team_set_template = models.ForeignKey(
-        "app.TeamSetTemplate", on_delete=models.CASCADE, null=True
+        "app.TeamSetTemplate",
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="attributes",
+    )
+    course = models.ForeignKey(
+        "app.Course", on_delete=models.CASCADE, related_name="attributes"
     )
 
 
