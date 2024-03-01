@@ -5,6 +5,7 @@ from accounts.models import MyUser
 from app.models.section import Section
 from app.models.course_member import CourseMember
 
+
 class StudentMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
@@ -15,7 +16,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
         fields = "__all__"
-
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
