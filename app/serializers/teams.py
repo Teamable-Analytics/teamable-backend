@@ -8,6 +8,7 @@ from app.models import (
     TeamRequirement,
     TeamTemplateRequirement,
 )
+from app.serializers.attribute import AttributeSerializer
 from app.serializers.course_member import CourseMemberSerializer
 
 
@@ -50,6 +51,7 @@ class TeamTemplateSerializer(serializers.ModelSerializer):
 
 class TeamSetTemplateSerializer(serializers.ModelSerializer):
     teams = TeamTemplateSerializer(many=True, read_only=True)
+    attributes = AttributeSerializer(many=True, read_only=True)
 
     class Meta:
         model = TeamSetTemplate
