@@ -7,6 +7,3 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = "__all__"
-
-    def __str__(self):
-        return self.name

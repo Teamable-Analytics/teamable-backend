@@ -14,9 +14,3 @@ class StudentMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
         fields = ["id", "first_name", "last_name"]
-
-
-class SectionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Section
-        fields = "__all__"
