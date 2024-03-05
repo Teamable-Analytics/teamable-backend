@@ -18,7 +18,8 @@ class Attribute(BaseModel):
         "app.TeamSetTemplate",
         on_delete=models.CASCADE,
         null=True,
-        related_name="attributes",
+        # no related_name since it's not correct to say that a TeamTemplate has attributes
+        # will mostly be accessing an Attribute's TeamSet
     )
     course = models.ForeignKey(
         "app.Course", on_delete=models.CASCADE, related_name="attributes"
