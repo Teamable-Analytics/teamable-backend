@@ -11,3 +11,4 @@ from .team import (
     Team,
     TeamRequirement,
 )
+from .project import Project
