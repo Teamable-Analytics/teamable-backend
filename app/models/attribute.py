@@ -11,6 +11,7 @@ class AttributeValueType(models.TextChoices):
 
 
 class Attribute(BaseModel):
+    name = models.TextField()
     question = models.TextField()
     value_type = models.CharField(max_length=50, choices=AttributeValueType.choices)
     max_selections = models.IntegerField()
@@ -30,6 +31,7 @@ class AttributeOption(BaseModel):
     attribute = models.ForeignKey(
         Attribute, on_delete=models.CASCADE, related_name="options"
     )
+    label = models.TextField()
     value = models.TextField()
 
 
