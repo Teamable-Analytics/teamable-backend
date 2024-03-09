@@ -14,13 +14,7 @@ class AttributeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Attribute
-        fields = [
-            "id",
-            "question",
-            "value_type",
-            "max_selections",
-            "options",
-        ]
+        fields = "__all__"
 
 
 class AttributeResponseSerializer(serializers.ModelSerializer):
