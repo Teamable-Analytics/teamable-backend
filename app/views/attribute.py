@@ -11,7 +11,7 @@ class AttributeViewSet(viewsets.ModelViewSet):
     filter_backends = []
 
     def list(self, request):
-        course_id = request.GET.get('course_id', None)
+        course_id = request.GET.get("course_id", None)
         query_set = self.filter_queryset(self.get_queryset())
 
         if course_id:
