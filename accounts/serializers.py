@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from accounts.models import MyUser
-from app.models.section import Section
-from app.models.course_member import CourseMember
 
 
 class StudentMemberSerializer(serializers.ModelSerializer):
