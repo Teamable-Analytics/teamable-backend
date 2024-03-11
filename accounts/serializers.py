@@ -10,6 +10,7 @@ class StudentMemberSerializer(serializers.ModelSerializer):
         model = MyUser
         fields = ["id", "first_name", "last_name"]
 
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
