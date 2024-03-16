@@ -6,4 +6,4 @@ from app.models.organization import Organization
 
 class Course(BaseModel):
     name = models.CharField(max_length=500)
-    organization = models.ForeignKey(Organization, null=True, blanlk=True, on_delete=models.SET_NULL)
+    organization = models.ForeignKey(Organization, null=True, blank=True, on_delete=models.SET_NULL)
