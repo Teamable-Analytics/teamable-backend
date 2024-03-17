@@ -8,6 +8,10 @@ class StudentMemberSerializer(serializers.ModelSerializer):
         model = MyUser
         fields = ["id", "first_name", "last_name"]
 
+class MyUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyUser
+        fields = ["id", "username", "first_name", "last_name", "email", "is_staff"]
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
