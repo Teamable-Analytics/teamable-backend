@@ -23,9 +23,4 @@ class FilterStudents(filters.BaseFilterBackend):
                     ordering = F(db_field).desc(nulls_last=True)
 
             return queryset.order_by(ordering) if ordering else queryset
-
-        course_param = request.query_params.get("course", None)
-        if course_param:
-            queryset = queryset.filter(course=course_param)
-
         return queryset
