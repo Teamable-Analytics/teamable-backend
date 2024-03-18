@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from accounts.serializers import UserSerializer
+from accounts.serializers import MyUserSerializer
 from app.models.course_member import CourseMember
 from app.serializers.attribute import AttributeResponseSerializer
 from app.serializers.relationship import RelationshipSerializer
@@ -15,7 +15,7 @@ class CourseMemberSerializer(serializers.ModelSerializer):
         "attribute_responses", many=True, read_only=True
     )
 
-    user = UserSerializer(read_only=True)
+    user = MyUserSerializer(read_only=True)
     sections = SectionSerializer(many=True, read_only=True)
 
     class Meta:
