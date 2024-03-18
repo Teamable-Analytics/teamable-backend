@@ -5,8 +5,6 @@ from app.paginators.pagination import ExamplePagination
 from app.filters.course_member import FilterStudents
 from app.serializers.course_member import CourseMemberSerializer
 
-
-from rest_framework.decorators import action
 from rest_framework.response import Response
 
 
@@ -17,13 +15,14 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
     ordering_fields = "__all__"
     filter_backends = [FilterStudents]
 
-    @action(detail=False, methods=["get"], url_path="course/(?P<course>[^/.]+)")
-    def by_course(self, request, course):
-        queryset = CourseMember.objects.filter(course=course)
+    def get_students_by_course(self, request, course=None, *args, **kwargs):
+        queryset = CourseMember.objects.all()
+        if course is not None:
+            queryset = queryset.filter(course=course)
 
-        for backend in self.filter_backends:
-            queryset = backend().filter_queryset(request, queryset, self)
-
+        for backend in list(self.filter_backends):
+            queryset = backend().filter_queryset(self.request, queryset, self)
+        
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
