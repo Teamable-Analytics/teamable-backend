@@ -34,9 +34,6 @@ class Team(BaseModel):
     team_set = models.ForeignKey(
         TeamSet, on_delete=models.CASCADE, related_name="teams"
     )
-    project = models.ForeignKey(
-        "app.Project", on_delete=models.CASCADE, related_name="teams"
-    )
 
 
 class TeamRequirement(BaseModel):

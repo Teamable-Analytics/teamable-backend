@@ -21,7 +21,6 @@ router.register("relationships", RelationshipViewSet)
 router.register("teams", TeamViewSet)
 router.register("teamsets", TeamSetViewSet)
 router.register("team-templates", TeamTemplateViewSet)
-router.register("team", TeamViewSet)
 router.register("teamset-templates", TeamSetTemplateViewSet)
 router.register("attributes", AttributeViewSet)
 
