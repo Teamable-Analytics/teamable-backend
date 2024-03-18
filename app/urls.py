@@ -24,6 +24,7 @@ router.register("team-templates", TeamTemplateViewSet)
 router.register("teamset-templates", TeamSetTemplateViewSet)
 router.register("attributes", AttributeViewSet)
 
+
 urlpatterns = [
     path("", include(router.urls)),
 ]
