@@ -22,7 +22,7 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
 
         for backend in list(self.filter_backends):
             queryset = backend().filter_queryset(self.request, queryset, self)
-        
+
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

@@ -26,5 +26,9 @@ router.register("attributes", AttributeViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("course-members/course/<int:course>/", CourseMemberViewSet.as_view({"get": "get_students_by_course"}), name="get-students-by-course"),
+    path(
+        "course-members/course/<int:course>/",
+        CourseMemberViewSet.as_view({"get": "get_students_by_course"}),
+        name="get-students-by-course",
+    ),
 ]
