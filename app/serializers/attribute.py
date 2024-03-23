@@ -4,6 +4,8 @@ from app.models import Attribute, AttributeResponse, AttributeOption
 
 
 class AttributeOptionSerializer(serializers.ModelSerializer):
+    num_student_responses = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = AttributeOption
         fields = "__all__"
@@ -11,6 +13,7 @@ class AttributeOptionSerializer(serializers.ModelSerializer):
 
 class AttributeSerializer(serializers.ModelSerializer):
     options = AttributeOptionSerializer(many=True, read_only=True)
+    num_student_responses = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Attribute
