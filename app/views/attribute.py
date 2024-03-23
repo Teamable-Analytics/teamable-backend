@@ -53,7 +53,10 @@ class AttributeViewSet(viewsets.ModelViewSet):
     def save_attribute(self, request):
         if "id" in request.data:
             attribute = get_object_or_404(Attribute, pk=request.data["id"])
-            if request.data["value_type"] != attribute.value_type:
+            if (
+                request.data["value_type"] != attribute.value_type
+                or request.data["max_selections"] < attribute.max_selections
+            ):
                 self.clear_student_responses()
             attribute_serializer = AttributeSerializer(attribute, data=request.data)
         else:
