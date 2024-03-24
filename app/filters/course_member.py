@@ -23,5 +23,4 @@ class FilterStudents(filters.BaseFilterBackend):
                     ordering = F(db_field).desc(nulls_last=True)
 
             return queryset.order_by(ordering) if ordering else queryset
-
         return queryset
