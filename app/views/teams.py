@@ -8,6 +8,12 @@ class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
 
+    def get_queryset(self):
+        return self.queryset.filter(team_set_id=self.kwargs["teamset_id"])
+
+    def perform_create(self, serializer):
+        serializer.save(team_set_id=self.kwargs["teamset_id"])
+
 
 class TeamSetViewSet(viewsets.ModelViewSet):
     queryset = TeamSet.objects.all()
@@ -17,6 +23,12 @@ class TeamSetViewSet(viewsets.ModelViewSet):
 class TeamTemplateViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(team_set_id=self.kwargs["teamset_template_id"])
+
+    def perform_create(self, serializer):
+        serializer.save(team_set_id=self.kwargs["teamset_template_id"])
 
 
 class TeamSetTemplateViewSet(viewsets.ModelViewSet):
