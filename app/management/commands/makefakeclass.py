@@ -90,6 +90,11 @@ class Command(BaseCommand):
             for section_number in range(1, num_sections + 1)
         ]
 
+        self.stdout.write(
+            self.style.SUCCESS(
+                f'Course "{course.name}" has {str(sections)} as sections.'
+            )
+        )
         faker = Faker()
         for _ in range(num_students):
             num_sections_for_student = faker.random_int(min=1, max=len(sections))
