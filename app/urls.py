@@ -20,7 +20,10 @@ router.register("course-members", CourseMemberViewSet)
 router.register("relationships", RelationshipViewSet)
 router.register("teamsets/(?P<teamset_id>[^/.]+)/teams", TeamViewSet)
 router.register("teamsets", TeamSetViewSet)
-router.register("teamset-templates/(?P<teamset_template_id>[^/.]+)/team-templates", TeamTemplateViewSet)
+router.register(
+    "teamset-templates/(?P<teamset_template_id>[^/.]+)/team-templates",
+    TeamTemplateViewSet,
+)
 router.register("teamset-templates", TeamSetTemplateViewSet)
 router.register("attributes", AttributeViewSet)
 
