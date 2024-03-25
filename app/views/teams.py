@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 
-from app.models import Team, TeamSet
+from app.models import Team, TeamSet, TeamSetTemplate, TeamTemplate
 from app.serializers.teams import TeamSerializer, TeamSetSerializer
 
 
@@ -18,7 +18,7 @@ class TeamSetViewSet(viewsets.ModelViewSet):
 
 
 class TeamTemplateViewSet(viewsets.ModelViewSet):
-    queryset = Team.objects.all()
+    queryset = TeamTemplate.objects.all()
     serializer_class = TeamSerializer
 
     def get_queryset(self):
@@ -26,5 +26,5 @@ class TeamTemplateViewSet(viewsets.ModelViewSet):
 
 
 class TeamSetTemplateViewSet(viewsets.ModelViewSet):
-    queryset = TeamSet.objects.all()
+    queryset = TeamSetTemplate.objects.all()
     serializer_class = TeamSetSerializer
