@@ -26,6 +26,18 @@ class Attribute(BaseModel):
         "app.Course", on_delete=models.CASCADE, related_name="attributes"
     )
 
+    @property
+    def has_student_responses(self):
+        return AttributeResponse.objects.filter(
+            attribute_option__attribute=self
+        ).exists()
+
+    @property
+    def num_student_responses(self):
+        return AttributeResponse.objects.filter(
+            attribute_option__attribute=self
+        ).count()
+
 
 class AttributeOption(BaseModel):
     attribute = models.ForeignKey(
@@ -33,6 +45,14 @@ class AttributeOption(BaseModel):
     )
     label = models.TextField()
     value = models.TextField()
+
+    @property
+    def has_student_responses(self):
+        return AttributeResponse.objects.filter(attribute_option=self).exists()
+
+    @property
+    def num_student_responses(self):
+        return AttributeResponse.objects.filter(attribute_option=self).count()
 
 
 class AttributeResponse(BaseModel):
