@@ -71,8 +71,7 @@ class FilterStudents(filters.BaseFilterBackend):
         query = Q()
 
         if sections:
-            for section in sections:
-                query |= Q(sections=section)
+            query |= Q(sections__in=sections)
 
         queryset = queryset.filter(query).distinct()
         return queryset
