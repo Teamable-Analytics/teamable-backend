@@ -67,7 +67,7 @@ class FilterStudents(filters.BaseFilterBackend):
 
     def filter_queryset_by_section(self, request, queryset, view):
         sections = request.query_params.get("sections", None)
-        sections = sections.split(".") if sections else None
+        sections = sections.split(",") if sections else None
         query = Q()
 
         if sections:
