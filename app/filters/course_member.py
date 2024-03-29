@@ -9,6 +9,7 @@ class FilterStudents(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         queryset = self.search_queryset(request, queryset, view)
         queryset = self.sort_queryset(request, queryset, view)
+        queryset = self.filter_queryset_by_section(request, queryset, view)
         return queryset
 
     def sort_queryset(self, request, queryset, view):
@@ -20,7 +21,6 @@ class FilterStudents(filters.BaseFilterBackend):
                 "firstname": "user__first_name",
                 "lastname": "user__last_name",
                 "id": "user__id",
-                "sections": "sections__name",
             }
 
             db_field = sort_mappings.get(field, None)
@@ -63,4 +63,15 @@ class FilterStudents(filters.BaseFilterBackend):
                 query |= condition
 
             queryset = queryset.filter(query)
+        return queryset
+
+    def filter_queryset_by_section(self, request, queryset, view):
+        sections = request.query_params.get("sections", None)
+        sections = sections.split(",") if sections else None
+        query = Q()
+
+        if sections:
+            query |= Q(sections__in=sections)
+
+        queryset = queryset.filter(query).distinct()
         return queryset
