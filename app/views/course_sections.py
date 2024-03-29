@@ -13,6 +13,5 @@ class CourseSectionViewSet(viewsets.ModelViewSet):
 
     def get_course_sections(self, request, course):
         course = get_object_or_404(Course, pk=course)
-        course.sections.set(Section.objects.filter(course=course))
         serializer = SectionSerializer(course.sections, many=True)
         return Response(serializer.data)
