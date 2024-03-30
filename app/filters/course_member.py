@@ -34,7 +34,7 @@ class FilterStudents(filters.BaseFilterBackend):
         return queryset
 
     def search_queryset(self, request, queryset, view):
-        search_param = request.query_params.get("title", None)
+        search_param = request.query_params.get("search", None)
 
         if search_param:
             search_mappings = {
