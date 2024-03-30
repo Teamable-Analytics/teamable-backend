@@ -31,12 +31,18 @@ class Attribute(BaseModel):
         return AttributeResponse.objects.filter(
             attribute_option__attribute=self
         ).exists()
+        # return self.num_student_responses > 0
 
     @property
     def num_student_responses(self):
-        return AttributeResponse.objects.filter(
-            attribute_option__attribute=self
-        ).count()
+        # return AttributeResponse.objects.filter(
+        #     attribute_option__attribute=self
+        # ).count()
+        print(self.options)
+        return "self.options"
+        # return self.attribute_options.aggregate(
+        #     num_student_responses=models.Count("attribute_responses")
+        # )["num_student_responses"]
 
 
 class AttributeOption(BaseModel):
@@ -52,7 +58,8 @@ class AttributeOption(BaseModel):
 
     @property
     def num_student_responses(self):
-        return AttributeResponse.objects.filter(attribute_option=self).count()
+        # return AttributeResponse.objects.filter(attribute_option=self).count()
+        return self.attribute
 
 
 class AttributeResponse(BaseModel):
@@ -62,3 +69,10 @@ class AttributeResponse(BaseModel):
     attribute_option = models.ForeignKey(
         AttributeOption, on_delete=models.CASCADE, related_name="attribute_responses"
     )
+
+    @staticmethod
+    def clear_attribute_responses(attribute_id):
+        num_attribute_responses_deleted, _ = AttributeResponse.objects.filter(
+            attribute_option_id=attribute_id
+        ).delete()
+        return num_attribute_responses_deleted
