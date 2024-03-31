@@ -26,6 +26,8 @@ class Attribute(BaseModel):
         "app.Course", on_delete=models.CASCADE, related_name="attributes"
     )
 
+    def clear_student_responses(self):
+        pass
 
 class AttributeOption(BaseModel):
     attribute = models.ForeignKey(

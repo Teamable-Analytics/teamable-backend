@@ -1,6 +1,6 @@
 import json
-from unittest import main
 from unittest import mock
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.test import TransactionTestCase
 from rest_framework.test import APIRequestFactory
@@ -41,6 +41,22 @@ class TestAttribute(TransactionTestCase):
 
         self.assertTrue("Options field is required" in str(context.exception))
 
+    def test_save_attribute_with_non_existent_id_raises_404(self):
+        data = {
+            "id": 100,
+            "name": "name",
+            "question": "question",
+            "value_type": "String",
+            "max_selections": 1,
+            "team_set_template": None,
+            "course": self.course.pk,
+        }
+
+        with self.assertRaises(Http404) as context:
+            AttributeViewSet.save_attribute(AttributeViewSet, get_post_request(data))
+
+        self.assertTrue("No Attribute matches the given query" in str(context.exception))
+
     def test_save_attribute_without_id_creates_new_attribute(self):
         data = {
             "name": "name",
@@ -58,7 +74,7 @@ class TestAttribute(TransactionTestCase):
 
         self.assertEqual(Attribute.objects.count(), 1)
 
-        attribute = get_object_or_404(Attribute, pk=attribute.data["id"])
+        attribute = get_object_or_404(Attribute, pk=attribute.data.get("id"))
         self.assertEqual(attribute.name, "name")
         self.assertEqual(attribute.question, "question")
         self.assertEqual(attribute.value_type, "String")
@@ -105,7 +121,7 @@ class TestAttribute(TransactionTestCase):
         self.assertEqual(updated_attribute.course.pk, self.course.pk)
         self.assertEqual(updated_attribute.options.count(), 0)
 
-    @mock.patch("app.views.attribute.AttributeViewSet.clear_student_responses")
+    @mock.patch("app.models.attribute.Attribute.clear_student_responses")
     def test_save_attribute_with_id_and_different_value_type_clears_attribute_responses(
         self, mock_clear_student_responses
     ):
@@ -144,12 +160,12 @@ class TestAttribute(TransactionTestCase):
         )
 
         options = [
-            {"attribute": attribute.pk, "value": "value1", "label": "label1"},
-            {"attribute": attribute.pk, "value": "value2", "label": "label2"},
+            {"value": "value1", "label": "label1"},
+            {"value": "value2", "label": "label2"},
         ]
 
         for option in options:
-            AttributeViewSet.save_attribute_option(option)
+            AttributeViewSet.save_attribute_option(AttributeViewSet, option, attribute.pk)
 
         self.assertEqual(AttributeOption.objects.count(), 2)
 
@@ -176,12 +192,11 @@ class TestAttribute(TransactionTestCase):
 
         option = {
             "id": attribute_option.pk,
-            "attribute": attribute.pk,
             "value": "value2",
             "label": "label2",
         }
 
-        AttributeViewSet.save_attribute_option(option)
+        AttributeViewSet.save_attribute_option(AttributeViewSet, option, attribute.pk)
 
         self.assertEqual(AttributeOption.objects.count(), 1)
 
@@ -192,7 +207,8 @@ class TestAttribute(TransactionTestCase):
         self.assertEqual(updated_attribute_option.label, "label2")
         self.assertEqual(updated_attribute_option.attribute.pk, attribute.pk)
 
-    def test_delete_attribute_options_not_in_list_deletes_old_attribute_options(self):
+
+    def test_save_attribute_options_with_non_existent_id_raises_404(self):
         attribute = Attribute.objects.create(
             name="test",
             question="test",
@@ -201,33 +217,17 @@ class TestAttribute(TransactionTestCase):
             team_set_template=None,
             course=self.course,
         )
-        attribute_option1 = AttributeOption.objects.create(
-            attribute=attribute, label="label1", value="value1"
-        )
-        attribute_option2 = AttributeOption.objects.create(
-            attribute=attribute, label="label2", value="value2"
-        )
 
-        options = [
-            {
-                "id": attribute_option1.pk,
-                "attribute": attribute.pk,
-                "value": "value1",
-                "label": "label1",
-            }
-        ]
+        option = {
+            "id": 100,
+            "value": "value2",
+            "label": "label2",
+        }
 
-        AttributeViewSet.delete_attribute_options_not_in_list(attribute, options)
+        with self.assertRaises(Http404) as context:
+            AttributeViewSet.save_attribute_option(AttributeViewSet, option, attribute.pk)
 
-        self.assertEqual(AttributeOption.objects.count(), 1)
-
-        remaining_attribute_option = get_object_or_404(
-            AttributeOption, pk=attribute_option1.pk
-        )
-        self.assertEqual(remaining_attribute_option.value, "value1")
-        self.assertEqual(remaining_attribute_option.label, "label1")
-        self.assertEqual(remaining_attribute_option.attribute.pk, attribute.pk)
-
+        self.assertTrue("No AttributeOption matches the given query" in str(context.exception))
 
 def get_post_request(data):
     factory = APIRequestFactory()
@@ -238,7 +238,3 @@ def get_post_request(data):
     )
     request = Request(factory_request, parsers=[JSONParser()])
     return request
-
-
-if __name__ == "__main__":
-    main()
