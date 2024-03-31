@@ -55,7 +55,9 @@ class TestAttribute(TransactionTestCase):
         with self.assertRaises(Http404) as context:
             AttributeViewSet.save_attribute(AttributeViewSet, get_post_request(data))
 
-        self.assertTrue("No Attribute matches the given query" in str(context.exception))
+        self.assertTrue(
+            "No Attribute matches the given query" in str(context.exception)
+        )
 
     def test_save_attribute_without_id_creates_new_attribute(self):
         data = {
@@ -165,7 +167,9 @@ class TestAttribute(TransactionTestCase):
         ]
 
         for option in options:
-            AttributeViewSet.save_attribute_option(AttributeViewSet, option, attribute.pk)
+            AttributeViewSet.save_attribute_option(
+                AttributeViewSet, option, attribute.pk
+            )
 
         self.assertEqual(AttributeOption.objects.count(), 2)
 
@@ -207,7 +211,6 @@ class TestAttribute(TransactionTestCase):
         self.assertEqual(updated_attribute_option.label, "label2")
         self.assertEqual(updated_attribute_option.attribute.pk, attribute.pk)
 
-
     def test_save_attribute_options_with_non_existent_id_raises_404(self):
         attribute = Attribute.objects.create(
             name="test",
@@ -225,9 +228,14 @@ class TestAttribute(TransactionTestCase):
         }
 
         with self.assertRaises(Http404) as context:
-            AttributeViewSet.save_attribute_option(AttributeViewSet, option, attribute.pk)
+            AttributeViewSet.save_attribute_option(
+                AttributeViewSet, option, attribute.pk
+            )
 
-        self.assertTrue("No AttributeOption matches the given query" in str(context.exception))
+        self.assertTrue(
+            "No AttributeOption matches the given query" in str(context.exception)
+        )
+
 
 def get_post_request(data):
     factory = APIRequestFactory()
