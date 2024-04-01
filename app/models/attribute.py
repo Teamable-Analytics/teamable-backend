@@ -26,8 +26,26 @@ class Attribute(BaseModel):
         "app.Course", on_delete=models.CASCADE, related_name="attributes"
     )
 
+<<<<<<< HEAD
     def clear_student_responses(self):
         pass
+=======
+    @property
+    def has_student_responses(self):
+        return self.num_student_responses > 0
+
+    @property
+    def num_student_responses(self):
+        return AttributeResponse.objects.filter(
+            attribute_option__attribute=self
+        ).count()
+
+    def delete_student_responses(self):
+        num_deleted_attribute_responses, _ = AttributeResponse.objects.filter(
+            attribute_option__attribute=self
+        ).delete()
+        return num_deleted_attribute_responses
+>>>>>>> master
 
 
 class AttributeOption(BaseModel):

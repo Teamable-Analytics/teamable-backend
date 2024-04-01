@@ -58,7 +58,7 @@ class AttributeViewSet(viewsets.ModelViewSet):
                 request.data.get("value_type") != attribute.value_type
                 or request.data.get("max_selections") < attribute.max_selections
             ):
-                attribute.clear_student_responses()
+                attribute.delete_student_responses()
 
             Attribute.objects.filter(pk=attribute_id).update(
                 **{**attribute_serializer.data, "course": course}
@@ -76,3 +76,11 @@ class AttributeViewSet(viewsets.ModelViewSet):
             raise FieldError("Options field is required")
 
         return Response({"data": AttributeSerializer(attribute).data})
+
+    @action(detail=False, methods=["post"])
+    def delete_student_responses(self, request):
+        attribute = get_object_or_404(Attribute, pk=request.data.get("attribute_id"))
+        num_deleted_attribute_responses = attribute.delete_student_responses()
+        return Response(
+            {"num_deleted_attribute_responses": num_deleted_attribute_responses}
+        )
