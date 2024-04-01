@@ -18,4 +18,6 @@ class AttributeViewSet(viewsets.ModelViewSet):
     def delete_student_responses(self, request):
         attribute = get_object_or_404(Attribute, pk=request.data.get("attribute_id"))
         num_deleted_attribute_responses = attribute.delete_student_responses()
-        return Response({"num_deleted_attribute_responses": num_deleted_attribute_responses})
+        return Response(
+            {"num_deleted_attribute_responses": num_deleted_attribute_responses}
+        )
