@@ -18,27 +18,30 @@ class AttributeViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.DjangoFilterBackend]
     filterset_fields = ["course_id"]
 
-    def save_attribute_option(self, attribute_option_data: dict, attribute_id: int):
+    def save_attribute_option(
+        self, attribute_option_data: dict, attribute_id: int
+    ) -> AttributeOption:
         attribute_option_serializer = AttributeOptionSerializer(
             data={**attribute_option_data, "attribute": attribute_id}
         )
         if not attribute_option_serializer.is_valid():
             raise ValidationError(attribute_option_serializer.errors)
-        attribute_option_data["attribute"] = get_object_or_404(
-            Attribute, pk=attribute_id
-        )
+        attribute = get_object_or_404(Attribute, pk=attribute_id)
 
-        if "id" in attribute_option_data:
+        attribute_option_id = attribute_option_data.get("id")
+        if attribute_option_id:
             attribute_option = get_object_or_404(
-                AttributeOption, pk=attribute_option_data.get("id")
+                AttributeOption, pk=attribute_option_id
             )
-            AttributeOption.objects.filter(pk=attribute_option_data.get("id")).update(
-                **attribute_option_data
+            AttributeOption.objects.filter(pk=attribute_option_id).update(
+                **{**attribute_option_data, "attribute": attribute}
             )
         else:
-            attribute_option = AttributeOption.objects.create(**attribute_option_data)
+            attribute_option = AttributeOption.objects.create(
+                **{**attribute_option_data, "attribute": attribute}
+            )
 
-        return {**attribute_option_serializer.data, "id": attribute_option.id}
+        return attribute_option
 
     @action(detail=False, methods=["post"])
     def save_attribute(self, request):
@@ -46,12 +49,10 @@ class AttributeViewSet(viewsets.ModelViewSet):
         if not attribute_serializer.is_valid():
             raise ValidationError(attribute_serializer.errors)
 
-        attribute_data = {**attribute_serializer.data}
-        attribute_data["course"] = get_object_or_404(
-            Course, pk=request.data.get("course")
-        )
+        course = get_object_or_404(Course, pk=request.data.get("course"))
 
-        if "id" in request.data:
+        attribute_id = request.data.get("id")
+        if attribute_id:
             attribute = get_object_or_404(Attribute, pk=request.data.get("id"))
             if (
                 request.data.get("value_type") != attribute.value_type
@@ -59,14 +60,19 @@ class AttributeViewSet(viewsets.ModelViewSet):
             ):
                 attribute.clear_student_responses()
 
-            Attribute.objects.filter(pk=request.data.get("id")).update(**attribute_data)
+            Attribute.objects.filter(pk=attribute_id).update(
+                **{**attribute_serializer.data, "course": course}
+            )
         else:
-            attribute = Attribute.objects.create(**attribute_data)
+            attribute = Attribute.objects.create(
+                **{**attribute_serializer.data, "course": course}
+            )
 
-        if "options" in request.data:
-            for attribute_option in request.data.get("options"):
+        attribute_options = request.data.get("options")
+        if attribute_options is not None:
+            for attribute_option in attribute_options:
                 self.save_attribute_option(attribute_option, attribute.id)
         else:
             raise FieldError("Options field is required")
 
-        return Response({**attribute_serializer.data, "id": attribute.id})
+        return Response({"data": AttributeSerializer(attribute).data})

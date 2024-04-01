@@ -1,5 +1,6 @@
 import json
 from unittest import mock
+from django.forms import ValidationError
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.test import TransactionTestCase
@@ -76,7 +77,9 @@ class TestAttribute(TransactionTestCase):
 
         self.assertEqual(Attribute.objects.count(), 1)
 
-        attribute = get_object_or_404(Attribute, pk=attribute.data.get("id"))
+        attribute = get_object_or_404(
+            Attribute, pk=attribute.data.get("data").get("id")
+        )
         self.assertEqual(attribute.name, "name")
         self.assertEqual(attribute.question, "question")
         self.assertEqual(attribute.value_type, "String")
@@ -113,7 +116,7 @@ class TestAttribute(TransactionTestCase):
         self.assertEqual(Attribute.objects.count(), 1)
 
         updated_attribute = get_object_or_404(
-            Attribute, pk=updated_attribute.data["id"]
+            Attribute, pk=updated_attribute.data.get("data").get("id")
         )
         self.assertEqual(updated_attribute.name, "name2")
         self.assertEqual(updated_attribute.question, "question2")
@@ -235,6 +238,32 @@ class TestAttribute(TransactionTestCase):
         self.assertTrue(
             "No AttributeOption matches the given query" in str(context.exception)
         )
+
+    def test_save_attribute_with_null_max_selection_throws_validation_error(self):
+        attribute = Attribute.objects.create(
+            name="name1",
+            question="question1",
+            value_type="String",
+            max_selections=1,
+            team_set_template=None,
+            course=self.course,
+        )
+
+        data = {
+            "id": attribute.pk,
+            "name": "name2",
+            "question": "question2",
+            "value_type": "Number",
+            "max_selections": None,
+            "team_set_template": None,
+            "course": self.course.pk,
+            "options": [],
+        }
+
+        with self.assertRaises(ValidationError) as context:
+            AttributeViewSet.save_attribute(AttributeViewSet, get_post_request(data))
+
+        self.assertIsNotNone(context.exception.error_dict.get("max_selections"))
 
 
 def get_post_request(data):
