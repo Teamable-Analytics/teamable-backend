@@ -37,12 +37,10 @@ class Attribute(BaseModel):
         ).count()
 
     def delete_student_responses(self):
-        attribute_responses = AttributeResponse.objects.filter(
+        num_deleted_attribute_responses, _ = AttributeResponse.objects.filter(
             attribute_option__attribute=self
-        )
-        deleted_attribute_responses = list(attribute_responses.values())
-        attribute_responses.delete()
-        return deleted_attribute_responses
+        ).delete()
+        return num_deleted_attribute_responses
 
 
 class AttributeOption(BaseModel):

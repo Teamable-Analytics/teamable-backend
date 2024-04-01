@@ -5,9 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from app.models import Attribute
-from app.models.attribute import AttributeOption, AttributeResponse
 from app.serializers.attribute import AttributeSerializer
-from django.core.exceptions import FieldError, ObjectDoesNotExist
 
 
 class AttributeViewSet(viewsets.ModelViewSet):
@@ -19,5 +17,5 @@ class AttributeViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"])
     def delete_student_responses(self, request):
         attribute = get_object_or_404(Attribute, pk=request.data.get("attribute_id"))
-        deleted_attribute_responses = attribute.delete_student_responses()
-        return Response({"deleted_attribute_responses": deleted_attribute_responses})
+        num_deleted_attribute_responses = attribute.delete_student_responses()
+        return Response({"num_deleted_attribute_responses": num_deleted_attribute_responses})
