@@ -1,7 +1,12 @@
 from rest_framework import viewsets
 
 from app.models import Team, TeamSet, TeamSetTemplate, TeamTemplate
-from app.serializers.teams import TeamSerializer, TeamSetSerializer, TeamTemplateSerializer, TeamSetTemplateSerializer
+from app.serializers.teams import (
+    TeamSerializer,
+    TeamSetSerializer,
+    TeamTemplateSerializer,
+    TeamSetTemplateSerializer,
+)
 
 
 class TeamViewSet(viewsets.ModelViewSet):
