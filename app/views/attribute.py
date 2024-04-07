@@ -5,6 +5,7 @@ from django_filters import rest_framework as filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 
 from app.models import Attribute
 from app.models.attribute import AttributeOption
@@ -44,6 +45,7 @@ class AttributeViewSet(viewsets.ModelViewSet):
         return attribute_option
 
     @action(detail=False, methods=["post"])
+    @transaction.atomic
     def save_attribute(self, request):
         attribute_serializer = AttributeSerializer(data=request.data)
         if not attribute_serializer.is_valid():
