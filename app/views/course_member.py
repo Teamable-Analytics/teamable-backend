@@ -37,7 +37,7 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
         else:
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
-    
+
     def fetch_course_sections(self, course_id):
         course = get_object_or_404(Course, pk=course_id)
         sections = course.sections.all()
@@ -50,20 +50,34 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
         section_ids = request.data.get("sections")
 
         if section_ids is None:
-            return Response({"message": "Sections are required."}, status=status.HTTP_400_BAD_REQUEST)      
+            return Response(
+                {"message": "Sections are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         if not isinstance(section_ids, list):
-            return Response({"message": "Sections must be a list."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "Sections must be a list."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         try:
             section_ids = [int(section_id) for section_id in section_ids]
         except ValueError:
-            return Response({"message": "Sections must be integers."}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {"message": "Sections must be integers."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         course_sections = self.fetch_course_sections(course_member.course.id)
         valid_section_ids = {section["id"] for section in course_sections}
 
         if not set(section_ids).issubset(valid_section_ids):
-            return Response({"message": "One or more sections are not part of the course."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "One or more sections are not part of the course."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         proposed_new_sections = Section.objects.filter(id__in=section_ids)
-        course_member.sections.set(proposed_new_sections)   
-        return Response({"message": "Sections updated successfully."}, status=status.HTTP_200_OK)
+        course_member.sections.set(proposed_new_sections)
+        return Response(
+            {"message": "Sections updated successfully."}, status=status.HTTP_200_OK
+        )

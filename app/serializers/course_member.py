@@ -19,5 +19,5 @@ class CourseMemberSerializer(serializers.ModelSerializer):
     sections = SectionSerializer(many=True, read_only=True)
 
     class Meta:
-        model = CourseMember 
+        model = CourseMember
         fields = "__all__"
