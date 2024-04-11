@@ -38,17 +38,17 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
 
-    def fetch_course_sections(self, course_id):
-        course = get_object_or_404(Course, pk=course_id)
-        sections = course.sections.all()
-        serializer = SectionSerializer(sections, many=True)
-        return serializer.data
-
     @action(detail=True, methods=["put"], url_path="update-sections")
     def update_sections(self, request, *args, **kwargs):
         course_member = self.get_object()
+
         section_ids = request.data.get("sections")
 
+        if course_member.role != CourseMember.STUDENT:
+            return Response(
+                {"message": "Only students can be assigned to sections."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         if section_ids is None:
             return Response(
                 {"message": "Sections are required."},
@@ -67,17 +67,14 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        course_sections = self.fetch_course_sections(course_member.course.id)
-        valid_section_ids = {section["id"] for section in course_sections}
-
-        if not set(section_ids).issubset(valid_section_ids):
+        attempted_sections_returned = Section.objects.filter(id__in=section_ids)
+        if len(attempted_sections_returned) != len(section_ids):
             return Response(
-                {"message": "One or more sections are not part of the course."},
+                {"message": "One or more sections do not exist."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        proposed_new_sections = Section.objects.filter(id__in=section_ids)
-        course_member.sections.set(proposed_new_sections)
-        return Response(
-            {"message": "Sections updated successfully."}, status=status.HTTP_200_OK
-        )
+        proposed_sections_update = Section.objects.filter(id__in=section_ids)
+        course_member.sections.set(proposed_sections_update)
+        serializer = self.get_serializer(course_member)
+        return Response(serializer.data)
