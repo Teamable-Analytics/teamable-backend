@@ -1,9 +1,8 @@
 from rest_framework import viewsets
 
-from app.models.course_member import CourseMember
+from app.models.course_member import CourseMember, UserRole
 from app.paginators.pagination import ExamplePagination
 from app.models.section import Section
-from app.models.course import Course
 from app.filters.course_member import FilterStudents
 from app.serializers.course_member import CourseMemberSerializer
 from app.serializers.section import SectionSerializer
@@ -44,7 +43,7 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
 
         section_ids = request.data.get("sections")
 
-        if course_member.role != CourseMember.STUDENT:
+        if course_member.role != UserRole.STUDENT:
             return Response(
                 {"message": "Only students can be assigned to sections."},
                 status=status.HTTP_400_BAD_REQUEST,
