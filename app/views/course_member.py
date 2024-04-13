@@ -56,10 +56,10 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
         )
         serializer.is_valid(raise_exception=True)
         if serializer.is_valid(raise_exception=True):
-                section_ids = serializer.validated_data["sections"]
-                proposed_sections_update = Section.objects.filter(id__in=section_ids)
-                course_member.sections.set(proposed_sections_update)
-                course_member.save()
+            section_ids = serializer.validated_data["sections"]
+            proposed_sections_update = Section.objects.filter(id__in=section_ids)
+            course_member.sections.set(proposed_sections_update)
+            course_member.save()
 
         return_course_member_serializer = self.get_serializer(course_member)
         return Response(return_course_member_serializer.data)
