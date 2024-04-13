@@ -5,13 +5,14 @@ from app.paginators.pagination import ExamplePagination
 from app.models.section import Section
 from app.filters.course_member import FilterStudents
 from app.serializers.course_member import CourseMemberSerializer
-from app.serializers.section import SectionSerializer
+from app.serializers.student_sections_update import StudentSectionsUpdateSerializer
 
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status
 
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 
 
 class CourseMemberViewSet(viewsets.ModelViewSet):
@@ -38,42 +39,27 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
     @action(detail=True, methods=["put"], url_path="update-sections")
+    @transaction.atomic
     def update_sections(self, request, *args, **kwargs):
         course_member = self.get_object()
-
-        section_ids = request.data.get("sections")
 
         if course_member.role != UserRole.STUDENT:
             return Response(
                 {"message": "Only students can be assigned to sections."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if section_ids is None:
-            return Response(
-                {"message": "Sections are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if not isinstance(section_ids, list):
-            return Response(
-                {"message": "Sections must be a list."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        try:
-            section_ids = [int(section_id) for section_id in section_ids]
-        except ValueError:
-            return Response(
-                {"message": "Sections must be integers."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
-        attempted_sections_returned = Section.objects.filter(id__in=section_ids)
-        if len(attempted_sections_returned) != len(section_ids):
-            return Response(
-                {"message": "One or more sections do not exist."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        serializer = StudentSectionsUpdateSerializer(
+            instance=course_member,
+            data=request.data,
+            context={"course": course_member.course},
+        )
+        serializer.is_valid(raise_exception=True)
+        if serializer.is_valid(raise_exception=True):
+                section_ids = serializer.validated_data["sections"]
+                proposed_sections_update = Section.objects.filter(id__in=section_ids)
+                course_member.sections.set(proposed_sections_update)
+                course_member.save()
 
-        proposed_sections_update = Section.objects.filter(id__in=section_ids)
-        course_member.sections.set(proposed_sections_update)
-        serializer = self.get_serializer(course_member)
-        return Response(serializer.data)
+        return_course_member_serializer = self.get_serializer(course_member)
+        return Response(return_course_member_serializer.data)
