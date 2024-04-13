@@ -4,8 +4,7 @@ from app.models.course_member import CourseMember, UserRole
 from app.paginators.pagination import ExamplePagination
 from app.models.section import Section
 from app.filters.course_member import FilterStudents
-from app.serializers.course_member import CourseMemberSerializer
-from app.serializers.student_sections_update import StudentSectionsUpdateSerializer
+from app.serializers.course_member import CourseMemberSerializer, UpdateStudentSectionsRequest
 
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -49,15 +48,14 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer = StudentSectionsUpdateSerializer(
+        StudentSectionsRequestSerializer = UpdateStudentSectionsRequest(
             instance=course_member,
             data=request.data,
             context={"course": course_member.course},
         )
-        serializer.is_valid(raise_exception=True)
-        if serializer.is_valid(raise_exception=True):
-            section_ids = serializer.validated_data["sections"]
-            proposed_sections_update = Section.objects.filter(id__in=section_ids)
+        if StudentSectionsRequestSerializer.is_valid(raise_exception=True):
+            section_ids = StudentSectionsRequestSerializer.get("sections")
+            proposed_sections_update = Section.objects.filter(id__in=section_ids, course=course_member.course)
             course_member.sections.set(proposed_sections_update)
             course_member.save()
 
