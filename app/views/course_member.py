@@ -54,7 +54,7 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
             context={"course": course_member.course},
         )
         if StudentSectionsRequestSerializer.is_valid(raise_exception=True):
-            section_ids = StudentSectionsRequestSerializer.get("sections")
+            section_ids = StudentSectionsRequestSerializer._validated_data["sections"]
             proposed_sections_update = Section.objects.filter(id__in=section_ids, course=course_member.course)
             course_member.sections.set(proposed_sections_update)
             course_member.save()
