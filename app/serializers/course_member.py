@@ -18,9 +18,11 @@ class CourseMemberSerializer(serializers.ModelSerializer):
 
     user = MyUserSerializer(read_only=True)
     sections = SectionSerializer(many=True, read_only=True)
+
     class Meta:
         model = CourseMember
         fields = "__all__"
+
 
 class UpdateStudentSectionsRequest(serializers.Serializer):
     sections = serializers.ListField(
@@ -35,7 +37,9 @@ class UpdateStudentSectionsRequest(serializers.Serializer):
     def validate_sections(self, value):
         course = self.context.get("course")
         sections_passed_in = set(value)
-        course_sections_ids = Section.objects.filter(course=course, id__in = sections_passed_in)
+        course_sections_ids = Section.objects.filter(
+            course=course, id__in=sections_passed_in
+        )
         if len(sections_passed_in) != course_sections_ids.count():
             raise serializers.ValidationError(
                 "One or more sections do not exist or are not part of the course."
