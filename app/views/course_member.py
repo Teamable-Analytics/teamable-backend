@@ -50,20 +50,19 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        StudentSectionsRequestSerializer = UpdateStudentSectionsRequest(
+        request_body_serializer = UpdateStudentSectionsRequest(
             instance=course_member,
             data=request.data,
             context={"course": course_member.course},
         )
-        if StudentSectionsRequestSerializer.is_valid(raise_exception=True):
-            section_ids = StudentSectionsRequestSerializer._validated_data.get(
-                "sections"
-            )
+        if request_body_serializer.is_valid(raise_exception=True):
+            section_ids = request_body_serializer._validated_data.get("sections")
+            print(section_ids)
             proposed_sections_update = Section.objects.filter(
                 id__in=section_ids, course=course_member.course
             )
             course_member.sections.set(proposed_sections_update)
             course_member.save()
 
-        return_course_member_serializer = self.get_serializer(course_member)
-        return Response(return_course_member_serializer.data)
+        response_course_member_serializer = self.get_serializer(course_member)
+        return Response(response_course_member_serializer.data)
