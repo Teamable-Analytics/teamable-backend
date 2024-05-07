@@ -30,7 +30,6 @@ class UpdateStudentSectionsRequest(serializers.Serializer):
         required=True,
         error_messages={
             "required": "Sections is required.",
-            "invalid": "Sections must be a list of integers.",
         },
     )
 
