@@ -56,3 +56,9 @@ class TeamSetTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamSetTemplate
         fields = "__all__"
+
+
+class OutlinedTeamSetTemplateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamSetTemplate
+        fields = ["id", "name"]

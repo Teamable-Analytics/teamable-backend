@@ -6,6 +6,7 @@ from app.serializers.teams import (
     TeamSetSerializer,
     TeamTemplateSerializer,
     TeamSetTemplateSerializer,
+    OutlinedTeamSetTemplateSerializer,
 )
 
 
@@ -27,3 +28,8 @@ class TeamTemplateViewSet(viewsets.ModelViewSet):
 class TeamSetTemplateViewSet(viewsets.ModelViewSet):
     queryset = TeamSetTemplate.objects.all()
     serializer_class = TeamSetTemplateSerializer
+
+
+class OutlinedTeamSetTemplateViewSet(viewsets.ModelViewSet):
+    queryset = TeamSetTemplate.objects.all()
+    serializer_class = OutlinedTeamSetTemplateSerializer
