@@ -1,3 +1,4 @@
+from django.http import Http404
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 
@@ -15,7 +16,10 @@ class TeamViewSet(viewsets.ModelViewSet):
     serializer_class = TeamSerializer
 
     def get_queryset(self):
-        return get_object_or_404(self.queryset, pk=self.kwargs["teamset_id"])
+        teamset = self.queryset.filter(teamset=self.kwargs["teamset_id"])
+        if not teamset.exists():
+            raise Http404
+        return teamset
 
 
 class TeamSetViewSet(viewsets.ModelViewSet):
@@ -28,7 +32,10 @@ class TeamTemplateViewSet(viewsets.ModelViewSet):
     serializer_class = TeamTemplateSerializer
 
     def get_queryset(self):
-        return get_object_or_404(self.queryset, pk=self.kwargs["teamset_template_id"])
+        teamset_template = self.queryset.filter(teamset_template=self.kwargs["teamset_template_id"])
+        if not teamset_template.exists():
+            raise Http404
+        return teamset_template
 
 
 class TeamSetTemplateViewSet(viewsets.ModelViewSet):
