@@ -32,7 +32,9 @@ class TeamTemplateViewSet(viewsets.ModelViewSet):
     serializer_class = TeamTemplateSerializer
 
     def get_queryset(self):
-        teamset_template = self.queryset.filter(teamset_template=self.kwargs["teamset_template_id"])
+        teamset_template = self.queryset.filter(
+            teamset_template=self.kwargs["teamset_template_id"]
+        )
         if not teamset_template.exists():
             raise Http404
         return teamset_template
