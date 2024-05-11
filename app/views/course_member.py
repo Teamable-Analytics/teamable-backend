@@ -71,7 +71,7 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
                 course_member.save()
                 response_course_member_serializer = self.get_serializer(course_member)
                 return Response(response_course_member_serializer.data)
-            
+
         except Exception as exc:
             errors = []
             if isinstance(exc, APIException):
