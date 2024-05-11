@@ -41,22 +41,6 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
 
-    def update_sections_exception_handler(self, exc):
-        errors = []
-        if isinstance(exc, APIException):
-            if isinstance(exc.detail, dict):
-                for field, error_list in exc.detail.items():
-                    for error in error_list:
-                        errors.append({"message": str(error)})
-            else:
-                errors.append({"message": exc.detail})
-        if isinstance(exc, ValidationError):
-            for field, error_list in exc.detail.items():
-                for error in error_list:
-                    errors.append({"message": str(error)})
-        response = Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
-        return response
-
     @action(detail=True, methods=["put"], url_path="update-sections")
     @transaction.atomic
     def update_sections(self, request, *args, **kwargs):
@@ -87,5 +71,19 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
                 course_member.save()
                 response_course_member_serializer = self.get_serializer(course_member)
                 return Response(response_course_member_serializer.data)
-        except Exception as e:
-            return self.update_sections_exception_handler(e)
+            
+        except Exception as exc:
+            errors = []
+            if isinstance(exc, APIException):
+                if isinstance(exc.detail, dict):
+                    for field, error_list in exc.detail.items():
+                        for error in error_list:
+                            errors.append({"message": str(error)})
+                else:
+                    errors.append({"message": exc.detail})
+            if isinstance(exc, ValidationError):
+                for field, error_list in exc.detail.items():
+                    for error in error_list:
+                        errors.append({"message": str(error)})
+            response = Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
+            return response
