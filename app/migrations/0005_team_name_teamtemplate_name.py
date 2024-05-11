@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("app", "0003_attribute_name_attributeoption_label"),
+        ("app", "0004_organization_course_organization"),
     ]
 
     operations = [
