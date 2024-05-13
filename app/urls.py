@@ -13,7 +13,6 @@ from app.views.teams import (
     TeamSetViewSet,
     TeamSetTemplateViewSet,
     TeamTemplateViewSet,
-    OutlinedTeamSetTemplateViewSet,
 )
 
 router = routers.DefaultRouter()
@@ -26,7 +25,6 @@ router.register("teams", TeamViewSet)
 router.register("teamsets", TeamSetViewSet)
 router.register("team-templates", TeamTemplateViewSet)
 router.register("teamset-templates", TeamSetTemplateViewSet)
-router.register("teamset-templates/outlined", OutlinedTeamSetTemplateViewSet)
 router.register("attributes", AttributeViewSet)
 
 urlpatterns = [
