@@ -29,7 +29,9 @@ class TeamTemplateViewSet(viewsets.ModelViewSet):
     serializer_class = TeamTemplateSerializer
 
     def get_queryset(self):
-        teamset_template = get_object_or_404(TeamSetTemplate, pk=self.kwargs["teamset_template_id"])
+        teamset_template = get_object_or_404(
+            TeamSetTemplate, pk=self.kwargs["teamset_template_id"]
+        )
         return get_list_or_404(self.queryset, team_set_id=teamset_template.pk)
 
 
