@@ -27,6 +27,7 @@ class TeamSet(BaseModel):
 
 
 class Team(BaseModel):
+    name = models.CharField(max_length=250)
     slug = models.UUIDField()
     max_people = models.IntegerField()
     min_people = models.IntegerField()
@@ -51,6 +52,7 @@ class TeamSetTemplate(BaseModel):
 
 
 class TeamTemplate(BaseModel):
+    name = models.CharField(max_length=250)
     description = models.TextField()
     slug = models.UUIDField()
     number_of_teams = models.IntegerField()

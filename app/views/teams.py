@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from django.shortcuts import get_object_or_404, get_list_or_404
 
 from app.models import Team, TeamSet, TeamSetTemplate, TeamTemplate
 from app.serializers.teams import (
@@ -13,6 +14,9 @@ class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
 
+    def get_queryset(self):
+        return get_list_or_404(self.queryset, team_set_id=self.kwargs["teamset_id"])
+
 
 class TeamSetViewSet(viewsets.ModelViewSet):
     queryset = TeamSet.objects.all()
@@ -22,6 +26,9 @@ class TeamSetViewSet(viewsets.ModelViewSet):
 class TeamTemplateViewSet(viewsets.ModelViewSet):
     queryset = TeamTemplate.objects.all()
     serializer_class = TeamTemplateSerializer
+
+    def get_queryset(self):
+        return get_list_or_404(self.queryset, team_set_id=self.kwargs["teamset_template_id"])
 
 
 class TeamSetTemplateViewSet(viewsets.ModelViewSet):

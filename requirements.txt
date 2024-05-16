@@ -6,3 +6,4 @@ djangorestframework==3.14.0
 Markdown==3.5.2
 psycopg2==2.9.9
 Faker==24.2.0
+python-dotenv==1.0.1
