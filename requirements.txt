@@ -6,4 +6,4 @@ Django==5.0
 djangorestframework==3.14.0
 Faker==24.2.0
 Markdown==3.5.2
-psycopg2==2.9.9s
+psycopg2==2.9.9
