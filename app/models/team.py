@@ -1,8 +1,12 @@
 from app.models.attribute import Attribute, AttributeOption
 from app.models.base_models import BaseModel
 from django.db import models
-
+from typing import TYPE_CHECKING
+from app.models.course import Course
 from app.models.course_member import CourseMember
+
+if TYPE_CHECKING:
+    from django.db.models.manager import RelatedManager
 
 
 class RequirementSubject(models.TextChoices):
@@ -23,7 +27,13 @@ class RequirementOperator(models.TextChoices):
 
 
 class TeamSet(BaseModel):
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name="team_sets"
+    )
     name = models.CharField(max_length=250)
+
+    if TYPE_CHECKING:
+        teams: RelatedManager["Team"]
 
 
 class Team(BaseModel):
