@@ -6,6 +6,9 @@ from canvasapi.enrollment import Enrollment
 from app.models.course_member import CourseMember, UserRole
 
 def import_students_from_canvas(course: Course):
+    if course.organization is None:
+        return
+
     canvas = Canvas(course.organization.lms_api_url, course.organization.lms_access_token)
     canvas_course = canvas.get_course(course.organization.lms_course_id)
 
@@ -16,7 +19,7 @@ def import_students_from_canvas(course: Course):
             user_id=None,
             name=student.user['name'],
             lms_id=student.user['id'],
-            course_id=course.id,
+            course_id=course.pk,
             role=UserRole.STUDENT
         )
 

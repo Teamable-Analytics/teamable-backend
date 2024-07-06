@@ -3,6 +3,7 @@
     "explorer.fileNesting.patterns": {
         ".env": "sample.env"
     },
+    "python.analysis.typeCheckingMode": "basic",
     "python.analysis.autoImportCompletions": true,
     "python.analysis.indexing": true,
     "python.analysis.packageIndexDepths": [
