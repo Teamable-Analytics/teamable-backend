@@ -126,9 +126,9 @@ class TestAttribute(TransactionTestCase):
         self.assertEqual(updated_attribute.course.pk, self.course.pk)
         self.assertEqual(updated_attribute.options.count(), 0)
 
-    @mock.patch("app.models.attribute.Attribute.clear_student_responses")
+    @mock.patch("app.models.attribute.Attribute.delete_student_responses")
     def test_save_attribute_with_id_and_different_value_type_clears_attribute_responses(
-        self, mock_clear_student_responses
+        self, mock_delete_student_responses
     ):
         attribute = Attribute.objects.create(
             name="name1",
@@ -152,7 +152,7 @@ class TestAttribute(TransactionTestCase):
 
         AttributeViewSet.save_attribute(AttributeViewSet, get_post_request(data))
 
-        mock_clear_student_responses.assert_called_once()
+        mock_delete_student_responses.assert_called_once()
 
     def test_save_attribute_options_without_id_creates_new_attribute_option(self):
         attribute = Attribute.objects.create(
