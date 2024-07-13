@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from app.canvas.export_team import export_team_to_canvas
 from app.canvas.import_students import import_students_from_canvas
+from app.canvas.opt_in_quizz import create_opt_in_quiz_canvas
 from app.models.course import Course
 from app.models.team import TeamSet
 from app.serializers.course import CourseUpdateSerializer, CourseViewSerializer
@@ -50,4 +51,10 @@ class CourseViewSet(viewsets.ModelViewSet):
         team_set = course.team_sets.get(pk=team_set_id)
 
         export_team_to_canvas(team_set)
+        return Response(status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post"], serializer_class=serializers.Serializer)
+    def create_opt_in_quiz_lms(self, request, pk=None):
+        course = self.get_object()
+        create_opt_in_quiz_canvas(course)
         return Response(status=status.HTTP_200_OK)

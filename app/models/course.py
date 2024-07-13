@@ -16,6 +16,7 @@ class Course(BaseModel):
     )
     lms_access_token = models.CharField(max_length=500, null=True, blank=True)
     lms_course_id = models.CharField(max_length=500, null=True, blank=True)
+    lms_opt_in_quiz_id = models.CharField(max_length=500, null=True, blank=True)
 
     if TYPE_CHECKING:
         team_sets: RelatedManager[TeamSet]
