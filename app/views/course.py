@@ -5,7 +5,7 @@ from app.canvas.export_team import export_team_to_canvas
 from app.canvas.import_students import import_students_from_canvas
 from app.models.course import Course
 from app.models.team import TeamSet
-from app.serializers.course import CourseSerializer
+from app.serializers.course import CourseUpdateSerializer, CourseViewSerializer
 
 
 class ExportTeamSerializer(serializers.ModelSerializer):
@@ -23,7 +23,12 @@ class ExportTeamSerializer(serializers.ModelSerializer):
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
-    serializer_class = CourseSerializer
+    serializer_class = CourseViewSerializer
+
+    def get_serializer_class(self):
+        if self.action in ["update", "partial_update"]:
+            return CourseUpdateSerializer
+        return super().get_serializer_class()
 
     @action(detail=True, methods=["post"], serializer_class=serializers.Serializer)
     def import_students_from_lms(self, request, pk=None):

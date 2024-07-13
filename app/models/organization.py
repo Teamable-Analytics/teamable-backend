@@ -14,5 +14,3 @@ class Organization(BaseModel):
         max_length=500, choices=LMSTypeOptions.choices, null=True, blank=True
     )
     lms_api_url = models.CharField(max_length=500, null=True, blank=True)
-    lms_access_token = models.CharField(max_length=500, null=True, blank=True)
-    lms_course_id = models.CharField(max_length=500, null=True, blank=True)

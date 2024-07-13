@@ -14,6 +14,8 @@ class Course(BaseModel):
     organization = models.ForeignKey(
         Organization, null=True, blank=True, on_delete=models.SET_NULL
     )
+    lms_access_token = models.CharField(max_length=500, null=True, blank=True)
+    lms_course_id = models.CharField(max_length=500, null=True, blank=True)
 
     if TYPE_CHECKING:
         team_sets: RelatedManager[TeamSet]

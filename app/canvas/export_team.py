@@ -13,10 +13,8 @@ def export_team_to_canvas(team_set: TeamSet):
     ):
         return
 
-    canvas = Canvas(
-        course.organization.lms_api_url, course.organization.lms_access_token
-    )
-    canvas_course = canvas.get_course(course.organization.lms_course_id)
+    canvas = Canvas(course.organization.lms_api_url, course.lms_access_token)
+    canvas_course = canvas.get_course(course.lms_course_id)
 
     group_category = canvas_course.create_group_category(name=team_set.name)
 
