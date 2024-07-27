@@ -23,7 +23,7 @@ class UserRegistrationViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer.save()
         headers = self.get_success_headers(serializer.data)
         return Response(
-            {**serializer.data, "success": True}, status=status.HTTP_201_CREATED, headers=headers
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
 
 
