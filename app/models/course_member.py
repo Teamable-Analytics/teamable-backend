@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.conf import settings
+import jwt
 from accounts.models import MyUser
 from app.models.base_models import BaseModel
 from app.models.course import Course
@@ -26,6 +27,27 @@ class CourseMember(BaseModel):
     role = models.CharField(max_length=50, choices=UserRole.choices)
     name = models.CharField(max_length=50, null=True, blank=True)
     lms_id = models.CharField(max_length=50, null=True, blank=True, unique=True)
+
+    def create_jwt_token(self):
+        """
+        Create a jwt token for a course member
+        """
+        token = jwt.encode(
+            {"course_member_id": self.pk}, settings.SECRET_KEY, algorithm="HS256"
+        )
+        return token
+
+    @classmethod
+    def set_user_by_token(cls, user, token):
+        """
+        Set the user of a course member by decoding a jwt token
+        """
+        course_member_id = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])[
+            "course_member_id"
+        ]
+        course_member = cls.objects.get(id=course_member_id)
+        course_member.user = user
+        course_member.save()
 
     @classmethod
     def add_course_member(
