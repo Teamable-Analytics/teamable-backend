@@ -1,5 +1,8 @@
-from rest_framework.authtoken.serializers import AuthTokenSerializer
-from accounts.serializers import UserRegistrationSerializer, UserSerializer
+from accounts.serializers import (
+    UserLoginSerializer,
+    UserRegistrationSerializer,
+    UserSerializer,
+)
 from rest_framework import viewsets
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
@@ -28,7 +31,7 @@ class UserRegistrationViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 
 class UserLoginViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    serializer_class = AuthTokenSerializer
+    serializer_class = UserLoginSerializer
     queryset = MyUser.objects.all()
 
     def create(self, request, *args, **kwargs):

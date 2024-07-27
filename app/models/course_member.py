@@ -12,6 +12,12 @@ class UserRole(models.TextChoices):
     INSTRUCTOR = "Instructor", "Instructor"
 
 
+class CourseMemberTokenError(Exception):
+    """Custom exception class for handling token errors"""
+
+    pass
+
+
 class CourseMember(BaseModel):
     user = models.ForeignKey(
         MyUser,
@@ -38,16 +44,28 @@ class CourseMember(BaseModel):
         return token
 
     @classmethod
-    def set_user_by_token(cls, user, token):
+    def validate_token(cls, token) -> "CourseMember":
         """
-        Set the user of a course member by decoding a jwt token
+        Validate a jwt token
+        @return: the course member corresponding to the token
         """
-        course_member_id = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])[
-            "course_member_id"
-        ]
+        try:
+            course_member_id = jwt.decode(
+                token, settings.SECRET_KEY, algorithms=["HS256"]
+            )["course_member_id"]
+        except jwt.DecodeError:
+            raise CourseMemberTokenError("Invalid token")
+
         course_member = cls.objects.get(id=course_member_id)
-        course_member.user = user
-        course_member.save()
+
+        if course_member.user is not None:
+            raise CourseMemberTokenError("Course member already has a user")
+
+        return course_member
+
+    def set_user(self, user):
+        self.user = user
+        self.save()
 
     @classmethod
     def add_course_member(
