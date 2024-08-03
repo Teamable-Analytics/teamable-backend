@@ -27,3 +27,10 @@ class TeamTemplateViewSet(viewsets.ModelViewSet):
 class TeamSetTemplateViewSet(viewsets.ModelViewSet):
     queryset = TeamSetTemplate.objects.all()
     serializer_class = TeamSetTemplateSerializer
+
+    def get_queryset(self):
+        queryset = TeamSetTemplate.objects.all()
+        is_detailed = self.request.query_params.get("detailed", None)
+        if is_detailed is not None and is_detailed.lower() == "true":
+            return queryset
+        return queryset.values("name", "id")
