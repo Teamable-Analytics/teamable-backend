@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from app.models.attribute import Attribute
 
 
-
 class Course(BaseModel):
     name = models.CharField(max_length=500)
     organization = models.ForeignKey(
@@ -23,7 +22,11 @@ class Course(BaseModel):
 
     # Studdy buddy specific fields
     grade_book_attribute = models.OneToOneField["Attribute"](
-        "Attribute", on_delete=models.SET_NULL, null=True, blank=True, related_name="grade_book_course"
+        "Attribute",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="grade_book_course",
     )
 
     if TYPE_CHECKING:

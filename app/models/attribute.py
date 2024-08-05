@@ -7,6 +7,7 @@ from app.models.course_member import CourseMember
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
 
+
 class AttributeValueType(models.TextChoices):
     STRING = "String", "String"
     NUMBER = "Number", "Number"
@@ -40,7 +41,7 @@ class Attribute(BaseModel):
 
     def delete_student_responses(self):
         return self.options.all().delete()
-    
+
     if TYPE_CHECKING:
         options: RelatedManager["AttributeOption"]
 

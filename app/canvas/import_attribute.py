@@ -1,5 +1,10 @@
 from typing import Dict, List
-from app.models.attribute import Attribute, AttributeOption, AttributeResponse, AttributeValueType
+from app.models.attribute import (
+    Attribute,
+    AttributeOption,
+    AttributeResponse,
+    AttributeValueType,
+)
 from app.models.course import Course
 from canvasapi import Canvas
 from canvasapi.enrollment import Enrollment
@@ -7,6 +12,7 @@ from canvasapi.assignment import Assignment, AssignmentGroup
 
 from app.models.organization import LMSTypeOptions
 from app.views import course_member
+
 
 # Studdy buddy specific function
 def create_gradebook_attribute(course: Course):
@@ -39,6 +45,7 @@ def create_gradebook_attribute(course: Course):
     course.grade_book_attribute = attribute
     course.save()
 
+
 # Studdy buddy specific function
 def import_gradebook_attribute_from_canvas(course: Course):
     if (
@@ -56,7 +63,9 @@ def import_gradebook_attribute_from_canvas(course: Course):
 
     course_members = course.course_members.all()
     assignments: List[Assignment] = list(canvas_course.get_assignments())
-    assignment_groups: List[AssignmentGroup] = list(canvas_course.get_assignment_groups())
+    assignment_groups: List[AssignmentGroup] = list(
+        canvas_course.get_assignment_groups()
+    )
 
     student_grades: Dict[int, float] = {}
     assignment_group_weights: Dict[int, float] = {}
@@ -69,8 +78,9 @@ def import_gradebook_attribute_from_canvas(course: Course):
     for assignment in assignments:
         if assignment.grading_type != "points":
             continue
-        assignment_group_totals[assignment.assignment_group_id] += assignment.points_possible
-
+        assignment_group_totals[
+            assignment.assignment_group_id
+        ] += assignment.points_possible
 
     for student in course_members:
         student_grades[student.pk] = 0
@@ -82,7 +92,7 @@ def import_gradebook_attribute_from_canvas(course: Course):
 
             weight = assignment_group_weights[assignment.assignment_group_id]
             total = assignment_group_totals[assignment.assignment_group_id]
-            
+
             try:
                 grade = float(assignment.get_submission(student.lms_id).score)
             except:
@@ -98,12 +108,9 @@ def import_gradebook_attribute_from_canvas(course: Course):
     for student in course_members:
         if student_grades[student.pk] >= average_grade:
             AttributeResponse.objects.create(
-                course_member=student,
-                attribute_option=above_option
+                course_member=student, attribute_option=above_option
             )
         else:
             AttributeResponse.objects.create(
-                course_member=student,
-                attribute_option=below_option
+                course_member=student, attribute_option=below_option
             )
-

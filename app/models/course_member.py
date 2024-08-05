@@ -29,7 +29,9 @@ class CourseMember(BaseModel):
     sections = models.ManyToManyField(
         Section, related_name="section_members", blank=True
     )
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="course_members")
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name="course_members"
+    )
     role = models.CharField(max_length=50, choices=UserRole.choices)
     name = models.CharField(max_length=50, null=True, blank=True)
     lms_id = models.CharField(max_length=50, null=True, blank=True, unique=True)

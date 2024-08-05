@@ -59,7 +59,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         course = self.get_object()
         create_opt_in_quiz_canvas(course)
         return Response(status=status.HTTP_200_OK)
-    
+
     # Studdy buddy specific function
     @action(detail=True, methods=["post"], serializer_class=serializers.Serializer)
     def import_gradebook_attribute_from_lms(self, request, pk=None):
