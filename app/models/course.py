@@ -20,7 +20,7 @@ class Course(BaseModel):
     lms_course_id = models.CharField(max_length=500, null=True, blank=True)
     lms_opt_in_quiz_id = models.CharField(max_length=500, null=True, blank=True)
 
-    # Studdy buddy specific fields
+    # Study buddy specific fields
     grade_book_attribute = models.OneToOneField["Attribute"](
         "Attribute",
         on_delete=models.SET_NULL,

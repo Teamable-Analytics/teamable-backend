@@ -14,7 +14,7 @@ from app.models.organization import LMSTypeOptions
 from app.views import course_member
 
 
-# Studdy buddy specific function
+# Study buddy specific function
 def create_gradebook_attribute(course: Course):
     if (
         course.organization is None
@@ -46,7 +46,7 @@ def create_gradebook_attribute(course: Course):
     course.save()
 
 
-# Studdy buddy specific function
+# Study buddy specific function
 def import_gradebook_attribute_from_canvas(course: Course):
     if (
         course.organization is None
