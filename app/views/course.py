@@ -2,6 +2,7 @@ from rest_framework import serializers, viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from app.canvas.export_team import export_team_to_canvas
+from app.canvas.import_attribute import import_gradebook_attribute_from_canvas
 from app.canvas.import_students import import_students_from_canvas
 from app.canvas.opt_in_quizz import create_opt_in_quiz_canvas
 from app.models.course import Course
@@ -57,4 +58,11 @@ class CourseViewSet(viewsets.ModelViewSet):
     def create_opt_in_quiz_lms(self, request, pk=None):
         course = self.get_object()
         create_opt_in_quiz_canvas(course)
+        return Response(status=status.HTTP_200_OK)
+    
+    # Studdy buddy specific function
+    @action(detail=True, methods=["post"], serializer_class=serializers.Serializer)
+    def import_gradebook_attribute_from_lms(self, request, pk=None):
+        course = self.get_object()
+        import_gradebook_attribute_from_canvas(course)
         return Response(status=status.HTTP_200_OK)

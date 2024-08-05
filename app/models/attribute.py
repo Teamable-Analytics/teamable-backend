@@ -1,8 +1,11 @@
+from typing import TYPE_CHECKING
 from django.db import models
 
 from app.models.base_models import BaseModel
 from app.models.course_member import CourseMember
 
+if TYPE_CHECKING:
+    from django.db.models.manager import RelatedManager
 
 class AttributeValueType(models.TextChoices):
     STRING = "String", "String"
@@ -19,6 +22,7 @@ class Attribute(BaseModel):
         "app.TeamSetTemplate",
         on_delete=models.CASCADE,
         null=True,
+        blank=True,
         # no related_name since it's not correct to say that a TeamTemplate has attributes
         # will mostly be accessing an Attribute's TeamSet
     )
@@ -28,19 +32,17 @@ class Attribute(BaseModel):
 
     @property
     def has_student_responses(self):
-        return self.num_student_responses > 0
+        return self.options.exists()
 
     @property
     def num_student_responses(self):
-        return AttributeResponse.objects.filter(
-            attribute_option__attribute=self
-        ).count()
+        return self.options.count()
 
     def delete_student_responses(self):
-        num_deleted_attribute_responses, _ = AttributeResponse.objects.filter(
-            attribute_option__attribute=self
-        ).delete()
-        return num_deleted_attribute_responses
+        return self.options.all().delete()
+    
+    if TYPE_CHECKING:
+        options: RelatedManager["AttributeOption"]
 
 
 class AttributeOption(BaseModel):

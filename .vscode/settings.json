@@ -16,6 +16,11 @@
             "name": "rest_framework",
             "depth": 10,
             "includeAllSymbols": true,
+        },
+        {
+            "name": "canvasapi",
+            "depth": 10,
+            "includeAllSymbols": true,
         }
     ]
 }
