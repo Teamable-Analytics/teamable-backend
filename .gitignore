@@ -1,6 +1,7 @@
 ### Django ###
 src/db.sqlite3
 __pycache__/
+staticfiles/
 
 ### DB Volume ###
 /.data

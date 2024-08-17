@@ -12,6 +12,8 @@ services:
     web:
         build: .
         image: teamable:latest
+        volumes:
+            - ./staticfiles:/code/staticfiles
         env_file:
             - ./.env
             - ./db.env
