@@ -4,10 +4,11 @@ services:
         volumes:
             - ./config/nginx.conf:/etc/nginx/nginx.conf
             - ./logs/nginx:/var/log/nginx/
+            - ./staticfiles:/static
         depends_on:
             - web
         ports:
-            - 8000:8000
+            - 8002:8000
         restart: always
     web:
         build: .
