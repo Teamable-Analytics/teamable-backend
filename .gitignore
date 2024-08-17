@@ -1,5 +1,5 @@
 ### Django ###
-db.sqlite3
+src/db.sqlite3
 __pycache__/
 
 ### DB Volume ###
@@ -9,5 +9,7 @@ __pycache__/
 .idea/
 
 venv/
+srv/
+logs/
 
 .env

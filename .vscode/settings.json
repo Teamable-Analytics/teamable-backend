@@ -1,7 +1,7 @@
 {
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
-        ".env": "sample.env"
+        ".env": "*.env",
     },
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.autoImportCompletions": true,
