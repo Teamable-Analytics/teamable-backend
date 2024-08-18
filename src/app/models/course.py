@@ -42,7 +42,7 @@ class Course(BaseModel):
             return None
         if self.organization.lms_type != LMSTypeOptions.CANVAS:
             return None
-        return f'{self.organization.lms_api_url}/courses/{self.lms_course_id}/quizzes/{self.lms_opt_in_quiz_id}'
+        return f"{self.organization.lms_api_url}/courses/{self.lms_course_id}/quizzes/{self.lms_opt_in_quiz_id}"
 
     @property
     def has_created_opt_in_quiz(self):
@@ -51,6 +51,7 @@ class Course(BaseModel):
     @property
     def has_students(self):
         from app.models.course_member import UserRole
+
         return self.course_members.filter(role=UserRole.STUDENT.value).exists()
 
     @property
