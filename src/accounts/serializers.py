@@ -8,6 +8,7 @@ from app.serializers.course_member import CourseMemberListSerializer
 import accounts.error_messages as ERROR_MESSAGES
 from django.contrib.auth import authenticate
 
+
 class StudentMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
@@ -19,7 +20,15 @@ class MyUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MyUser
-        fields = ["id", "username", "first_name", "last_name", "email", "is_staff", "course_memberships"]
+        fields = [
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "is_staff",
+            "course_memberships",
+        ]
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
