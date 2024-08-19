@@ -12,5 +12,6 @@ staticfiles/
 venv/
 srv/
 logs/
+src/debug.log
 
 .env
