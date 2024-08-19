@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from app.canvas.export_team import export_team_to_canvas
 from app.canvas.import_attribute import import_gradebook_attribute_from_canvas
 from app.canvas.import_students import import_students_from_canvas
-from app.canvas.opt_in_quizz import create_opt_in_quiz_canvas
+from app.canvas.opt_in_quiz import create_opt_in_quiz_canvas
 from app.models.course import Course
 from app.models.team import TeamSet
 from app.serializers.course import CourseUpdateSerializer, CourseViewSerializer
@@ -21,6 +21,26 @@ class ExportTeamSerializer(serializers.ModelSerializer):
         if not value.course == self.instance:
             raise serializers.ValidationError("Team set must belong to the course")
         return value
+
+
+class OnboardingProgressSerializer(serializers.ModelSerializer):
+    opt_in_quiz_link = serializers.CharField(read_only=True)
+    has_created_opt_in_quiz = serializers.BooleanField(read_only=True)
+    has_students = serializers.BooleanField(read_only=True)
+    has_attribute = serializers.BooleanField(read_only=True)
+    has_attribute_responses = serializers.BooleanField(read_only=True)
+    has_team_set = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = Course
+        fields = (
+            "opt_in_quiz_link",
+            "has_created_opt_in_quiz",
+            "has_students",
+            "has_attribute",
+            "has_attribute_responses",
+            "has_team_set",
+        )
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -59,6 +79,15 @@ class CourseViewSet(viewsets.ModelViewSet):
         course = self.get_object()
         create_opt_in_quiz_canvas(course)
         return Response(status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"], serializer_class=serializers.Serializer)
+    def get_onboarding_progress(self, request, pk=None):
+        serializer = OnboardingProgressSerializer(
+            instance=self.get_object(), data=request.data
+        )
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     # Study buddy specific function
     @action(detail=True, methods=["post"], serializer_class=serializers.Serializer)
