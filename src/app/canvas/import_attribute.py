@@ -13,6 +13,8 @@ from canvasapi.assignment import Assignment, AssignmentGroup
 from app.models.organization import LMSTypeOptions
 from app.views import course_member
 
+ABOVE_AVERAGE_LABEL = "Above Average"
+BELOW_AVERAGE_LABEL = "Below Average"
 
 # Study buddy specific function
 def create_gradebook_attribute(course: Course):
@@ -32,13 +34,13 @@ def create_gradebook_attribute(course: Course):
 
     AttributeOption.objects.create(
         attribute=attribute,
-        label="Above Average",
+        label=ABOVE_AVERAGE_LABEL,
         value="Above",
     )
 
     AttributeOption.objects.create(
         attribute=attribute,
-        label="Below Average",
+        label=BELOW_AVERAGE_LABEL,
         value="Below",
     )
 

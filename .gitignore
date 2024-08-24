@@ -4,13 +4,12 @@ __pycache__/
 staticfiles/
 
 ### DB Volume ###
-/.data
+srv/
 
 ### PyCharm ###
 .idea/
 
 venv/
-srv/
 logs/
-
 .env
+debug.log

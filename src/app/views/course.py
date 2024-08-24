@@ -8,6 +8,7 @@ from app.canvas.opt_in_quizz import create_opt_in_quiz_canvas
 from app.models.course import Course
 from app.models.team import TeamSet
 from app.serializers.course import CourseUpdateSerializer, CourseViewSerializer
+from app.services.team_generation import generate_teams
 
 
 class ExportTeamSerializer(serializers.ModelSerializer):
@@ -46,10 +47,7 @@ class CourseViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         # Pylance doesn't know that validated_data is valid after is_valid() check
-        team_set_id = serializer.validated_data["team_set"]  # type: ignore
-
-        course: Course = self.get_object()
-        team_set = course.team_sets.get(pk=team_set_id)
+        team_set = serializer.validated_data["team_set"]  # type: ignore
 
         export_team_to_canvas(team_set)
         return Response(status=status.HTTP_200_OK)
@@ -65,4 +63,10 @@ class CourseViewSet(viewsets.ModelViewSet):
     def import_gradebook_attribute_from_lms(self, request, pk=None):
         course = self.get_object()
         import_gradebook_attribute_from_canvas(course)
+        return Response(status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=["post"], serializer_class=serializers.Serializer)
+    def generate_teams(self, request, pk=None):
+        course = self.get_object()
+        generate_teams(course)
         return Response(status=status.HTTP_200_OK)

@@ -53,6 +53,9 @@ class AttributeOption(BaseModel):
     label = models.TextField()
     value = models.TextField()
 
+    if TYPE_CHECKING:
+        attribute_responses: RelatedManager["AttributeResponse"]
+
 
 class AttributeResponse(BaseModel):
     course_member = models.ForeignKey(
