@@ -25,9 +25,6 @@ def generate_teams(course: Course):
         below_average.attribute_responses.values_list("course_member", flat=True)
     )
 
-    print(above_average_members)
-    print(below_average_members)
-
     # req = requests.post(
     #     TEAM_GENERATION_API_URL,
     #     headers={
