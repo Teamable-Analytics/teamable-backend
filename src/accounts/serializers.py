@@ -1,10 +1,10 @@
-from rest_framework import serializers
 from django.contrib.auth.models import User
 from accounts.models import MyUser
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from app.models.course_member import CourseMember, CourseMemberTokenError
+from app.serializers.course_member import CourseMemberListSerializer
 import accounts.error_messages as ERROR_MESSAGES
 from django.contrib.auth import authenticate
 
@@ -16,9 +16,19 @@ class StudentMemberSerializer(serializers.ModelSerializer):
 
 
 class MyUserSerializer(serializers.ModelSerializer):
+    course_memberships = CourseMemberListSerializer(read_only=True, many=True)
+
     class Meta:
         model = MyUser
-        fields = ["id", "username", "first_name", "last_name", "email", "is_staff"]
+        fields = [
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "is_staff",
+            "course_memberships",
+        ]
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -94,11 +104,11 @@ class UserLoginSerializer(serializers.Serializer):
     token = serializers.CharField(read_only=True)
 
     def validate(self, data):
-        username = data.get("username")
+        email = data.get("email")
         password = data.get("password")
 
         user = authenticate(
-            request=self.context.get("request"), username=username, password=password
+            request=self.context.get("request"), username=email, password=password
         )
 
         # The authenticate call simply returns None for is_active=False
