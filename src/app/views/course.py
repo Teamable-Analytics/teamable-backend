@@ -93,7 +93,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         course = self.get_object()
         import_gradebook_attribute_from_canvas(course)
         return Response(status=status.HTTP_200_OK)
-    
+
     @action(detail=True, methods=["post"], serializer_class=serializers.Serializer)
     def generate_teams(self, request, pk=None):
         course = self.get_object()

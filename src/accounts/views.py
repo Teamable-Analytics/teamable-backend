@@ -3,7 +3,8 @@ from rest_framework.decorators import action
 from accounts.serializers import (
     UserLoginSerializer,
     UserRegistrationSerializer,
-    UserSerializer, MyUserSerializer,
+    UserSerializer,
+    MyUserSerializer,
 )
 from rest_framework import viewsets, serializers
 from rest_framework import mixins, viewsets, status
