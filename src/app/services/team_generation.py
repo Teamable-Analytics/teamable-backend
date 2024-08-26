@@ -79,4 +79,3 @@ def generate_teams(course: Course):
 
     for i, course_member_id in enumerate(below_average_members):
         teams[i % len(teams)].members.add(CourseMember.objects.get(id=course_member_id))
-

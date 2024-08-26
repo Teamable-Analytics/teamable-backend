@@ -1,9 +1,12 @@
+from rest_framework.decorators import action
+
 from accounts.serializers import (
     UserLoginSerializer,
     UserRegistrationSerializer,
     UserSerializer,
+    MyUserSerializer,
 )
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -14,6 +17,15 @@ from accounts.models import MyUser
 class UserViewSet(viewsets.ModelViewSet):
     queryset = MyUser.objects.all()
     serializer_class = UserSerializer
+
+    @action(detail=False, methods=["get"], serializer_class=serializers.Serializer)
+    def me(self, request, pk=None):
+        serializer = MyUserSerializer(request.user)
+
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserRegistrationViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):

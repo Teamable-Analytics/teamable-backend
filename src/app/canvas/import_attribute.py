@@ -16,6 +16,7 @@ from app.views import course_member
 ABOVE_AVERAGE_LABEL = "Above Average"
 BELOW_AVERAGE_LABEL = "Below Average"
 
+
 # Study buddy specific function
 def create_gradebook_attribute(course: Course):
     if (
