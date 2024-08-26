@@ -31,7 +31,7 @@ urlpatterns = [
     path("", include(router.urls)),
     # TODO: remove these paths (user router instead)
     path(
-        "course-members/course/<int:course>/",
+        "course/<int:course>/students",
         CourseMemberViewSet.as_view({"get": "get_students_by_course"}),
         name="get-students-by-course",
     ),

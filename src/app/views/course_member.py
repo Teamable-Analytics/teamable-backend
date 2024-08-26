@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 
-from app.models.course_member import CourseMember
+from app.models.course_member import CourseMember, UserRole
 from app.paginators.pagination import ExamplePagination
 from app.filters.course_member import FilterStudents
 from app.serializers.course_member import CourseMemberSerializer
@@ -16,7 +16,7 @@ class CourseMemberViewSet(viewsets.ModelViewSet):
     filter_backends = [FilterStudents]
 
     def get_students_by_course(self, request, course=None, *args, **kwargs):
-        queryset = CourseMember.objects.all()
+        queryset = CourseMember.objects.filter(role=UserRole.STUDENT)
         if course is not None:
             queryset = queryset.filter(course=course)
 
