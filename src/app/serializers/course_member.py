@@ -20,6 +20,12 @@ class CourseMemberSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class DisplayCourseMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseMember
+        fields = ("id", "lms_id", "name", "role")
+
+
 class CourseMemberListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseMember

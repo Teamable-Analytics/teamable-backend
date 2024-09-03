@@ -29,6 +29,11 @@ router.register("attributes", AttributeViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
+    path(
+        "courses/<int:pk>/team-sets/<int:team_set_pk>/",
+        CourseViewSet.as_view({"get": "get_teams"}),
+        name="get-teams-by-team-set",
+    ),
     # TODO: remove these paths (user router instead)
     path(
         "course/<int:course>/students",

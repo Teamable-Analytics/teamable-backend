@@ -65,7 +65,7 @@ def import_gradebook_attribute_from_canvas(course: Course):
     canvas_course = canvas.get_course(course.lms_course_id)
 
     course_members = course.course_members.all()
-    assignments: List[Assignment] = list(canvas_course.get_assignments())
+    assignments: List[Assignment] = list(canvas_course.get_assignments())[:5]
     assignment_groups: List[AssignmentGroup] = list(
         canvas_course.get_assignment_groups()
     )
@@ -81,9 +81,11 @@ def import_gradebook_attribute_from_canvas(course: Course):
     for assignment in assignments:
         if assignment.grading_type != "points":
             continue
-        assignment_group_totals[
-            assignment.assignment_group_id
-        ] += assignment.points_possible
+
+        points_possible = (
+            assignment.points_possible if assignment.points_possible else 0
+        )
+        assignment_group_totals[assignment.assignment_group_id] += points_possible
 
     for student in course_members:
         student_grades[student.pk] = 0
@@ -101,7 +103,7 @@ def import_gradebook_attribute_from_canvas(course: Course):
             except:
                 grade = 0
 
-            student_grades[student.pk] += grade * weight / total
+            student_grades[student.pk] += (grade * weight / total) if total else 0
 
     average_grade = sum(student_grades.values()) / len(student_grades)
 

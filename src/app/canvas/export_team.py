@@ -23,4 +23,7 @@ def export_team_to_canvas(team_set: TeamSet):
 
         for member in team.members.all():
             member: CourseMember
-            group.create_membership(member.lms_id)
+            if not member.lms_id:
+                # fixme: this feels bad
+                continue
+            group.create_membership(int(member.lms_id))
