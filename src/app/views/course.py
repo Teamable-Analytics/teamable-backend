@@ -8,6 +8,10 @@ from app.canvas.opt_in_quiz import create_opt_in_quiz_canvas
 from app.models.course import Course
 from app.models.team import TeamSet
 from app.serializers.course import CourseUpdateSerializer, CourseViewSerializer
+from app.serializers.teams import (
+    DisplayManyTeamSetSerializer,
+    DisplaySingleTeamSetSerializer,
+)
 from app.services.team_generation import generate_teams
 
 
@@ -22,6 +26,14 @@ class ExportTeamSerializer(serializers.ModelSerializer):
         if not value.course == self.instance:
             raise serializers.ValidationError("Team set must belong to the course")
         return value
+
+
+class CourseTeamSetsSerializer(serializers.ModelSerializer):
+    team_sets = DisplayManyTeamSetSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Course
+        fields = ("team_sets",)
 
 
 class OnboardingProgressSerializer(serializers.ModelSerializer):
@@ -99,3 +111,33 @@ class CourseViewSet(viewsets.ModelViewSet):
         course = self.get_object()
         generate_teams(course)
         return Response(status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"], serializer_class=serializers.Serializer)
+    def get_team_sets(self, request, pk=None):
+        serializer = CourseTeamSetsSerializer(
+            instance=self.get_object(), data=request.data
+        )
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"], serializer_class=serializers.Serializer)
+    def get_teams(self, request, pk=None, team_set_pk=None):
+        try:
+            team_set = self.get_object().team_sets.get(pk=team_set_pk)
+        except TeamSet.DoesNotExist:
+            return Response(
+                {
+                    "non_field_errors": [
+                        f"Could not find TeamSet with id ({team_set_pk}) in Course ({pk})."
+                    ]
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = DisplaySingleTeamSetSerializer(
+            instance=team_set, data=request.data
+        )
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)

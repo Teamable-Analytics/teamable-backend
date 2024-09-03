@@ -38,6 +38,7 @@ class TeamSet(BaseModel):
 
 class Team(BaseModel):
     slug = models.UUIDField()
+    name = models.CharField(max_length=250)
     max_people = models.IntegerField()
     min_people = models.IntegerField()
     members = models.ManyToManyField(CourseMember, related_name="teams")

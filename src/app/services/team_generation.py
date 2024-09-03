@@ -70,6 +70,7 @@ def generate_teams(course: Course):
     for course_member_id in above_average_members:
         team = Team.objects.create(
             slug=uuid.uuid4(),
+            name=f"Team {len(teams) + 1}",
             max_people=10,
             min_people=1,
             team_set=team_set,

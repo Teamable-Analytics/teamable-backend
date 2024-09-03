@@ -1,15 +1,15 @@
 from rest_framework import serializers
 
 from app.models.course import Course
-from app.serializers.attribute import AttributeSerializer
+from app.serializers.organization import OrganizationViewSerializer
 
 
 class CourseViewSerializer(serializers.ModelSerializer):
-    attributes = AttributeSerializer(many=True, read_only=True)
+    organization = OrganizationViewSerializer(read_only=True)
 
     class Meta:
         model = Course
-        fields = ["id", "name", "organization", "lms_course_id", "attributes"]
+        fields = ["id", "name", "organization", "lms_course_id"]
 
 
 class CourseUpdateSerializer(serializers.ModelSerializer):

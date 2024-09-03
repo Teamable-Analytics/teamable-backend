@@ -9,7 +9,10 @@ from app.models import (
     TeamTemplateRequirement,
 )
 from app.serializers.attribute import AttributeSerializer
-from app.serializers.course_member import CourseMemberSerializer
+from app.serializers.course_member import (
+    CourseMemberSerializer,
+    DisplayCourseMemberSerializer,
+)
 
 
 class TeamRequirementSerializer(serializers.ModelSerializer):
@@ -27,12 +30,35 @@ class TeamSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class DisplaySingleTeamSerializer(serializers.ModelSerializer):
+    members = DisplayCourseMemberSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Team
+        fields = ("id", "slug", "name", "members")
+
+
 class TeamSetSerializer(serializers.ModelSerializer):
     teams = TeamSerializer(many=True, read_only=True)
 
     class Meta:
         model = TeamSet
         fields = "__all__"
+
+
+class DisplaySingleTeamSetSerializer(serializers.ModelSerializer):
+    teams = DisplaySingleTeamSerializer(many=True, read_only=True)
+    name = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = TeamSet
+        fields = ("id", "name", "teams")
+
+
+class DisplayManyTeamSetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamSet
+        fields = ("id", "name")
 
 
 class TeamTemplateRequirementSerializer(serializers.ModelSerializer):
