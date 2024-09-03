@@ -17,6 +17,7 @@ class FilterStudents(filters.BaseFilterBackend):
         if sort_param:
             field, order = sort_param.rsplit(".", 1)
             ordering = None
+            # todo: fix sorting
             sort_mappings = {
                 "firstname": "user__first_name",
                 "lastname": "user__last_name",
@@ -38,7 +39,7 @@ class FilterStudents(filters.BaseFilterBackend):
 
         if search_param:
             search_mappings = {
-                "id": ("user__id", str),
+                "id": ("id", str),
             }
             queries = []
             for field, (query_param, expected_type) in search_mappings.items():
@@ -49,15 +50,7 @@ class FilterStudents(filters.BaseFilterBackend):
                         )
                 except ValueError:
                     continue
-            queryset = queryset.annotate(
-                full_name=Concat(
-                    "user__first_name",
-                    Value(" "),
-                    "user__last_name",
-                    output_field=CharField(),
-                )
-            )
-            queries.append(Q(full_name__icontains=str(search_param)))
+            queries.append(Q(name__icontains=str(search_param)))
             query = Q()
             for condition in queries:
                 query |= condition
