@@ -14,7 +14,7 @@ from rest_framework.authtoken.models import Token
 from accounts.models import MyUser
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.GenericViewSet):
     queryset = MyUser.objects.all()
     serializer_class = UserSerializer
 
