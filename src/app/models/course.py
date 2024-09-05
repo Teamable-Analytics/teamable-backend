@@ -8,8 +8,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
     from app.models.team import TeamSet
-    from app.models.course_member import CourseMember
+    from app.models.course_member import CourseMember, UserRole
     from app.models.attribute import Attribute
+    from accounts.models import MyUser
 
 
 class Course(BaseModel):
@@ -33,6 +34,23 @@ class Course(BaseModel):
     if TYPE_CHECKING:
         team_sets: RelatedManager[TeamSet]
         course_members: RelatedManager[CourseMember]
+
+    def has_view_permission(self, user: "MyUser") -> bool:
+        return True
+
+    def has_edit_permission(self, user: "MyUser") -> bool:
+        if not user.is_authenticated:
+            return False
+        if self.is_instructor(user):
+            return True
+        if user.is_staff:
+            return True
+        return False
+
+    def is_instructor(self, user: "MyUser") -> bool:
+        from app.models.course_member import UserRole
+
+        return self.course_members.filter(user=user, role=UserRole.INSTRUCTOR).exists()
 
     @property
     def opt_in_quiz_link(self):

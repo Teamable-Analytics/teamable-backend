@@ -8,7 +8,7 @@ from app.serializers.course_member import CourseMemberSerializer
 from rest_framework.response import Response
 
 
-class CourseMemberViewSet(viewsets.ModelViewSet):
+class CourseMemberViewSet(viewsets.GenericViewSet):
     queryset = CourseMember.objects.all()
     serializer_class = CourseMemberSerializer
     pagination_class = ExamplePagination

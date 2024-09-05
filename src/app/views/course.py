@@ -1,13 +1,19 @@
-from rest_framework import serializers, viewsets, status
+from rest_framework import serializers, viewsets, status, mixins
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from app.canvas.export_team import export_team_to_canvas
 from app.canvas.import_attribute import import_gradebook_attribute_from_canvas
 from app.canvas.import_students import import_students_from_canvas
 from app.canvas.opt_in_quiz import create_opt_in_quiz_canvas
+from app.filters.course_member import FilterStudents
 from app.models.course import Course
+from app.models.course_member import UserRole
 from app.models.team import TeamSet
+from app.paginators.pagination import ExamplePagination
+from app.permissions import IsCourseInstructor
 from app.serializers.course import CourseUpdateSerializer, CourseViewSerializer
+from app.serializers.course_member import CourseMemberSerializer
 from app.serializers.teams import (
     DisplayManyTeamSetSerializer,
     DisplaySingleTeamSetSerializer,
@@ -56,22 +62,36 @@ class OnboardingProgressSerializer(serializers.ModelSerializer):
         )
 
 
-class CourseViewSet(viewsets.ModelViewSet):
+class CourseViewSet(
+    mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet
+):
     queryset = Course.objects.all()
     serializer_class = CourseViewSerializer
+    permission_classes = [IsCourseInstructor]
+
 
     def get_serializer_class(self):
         if self.action in ["update", "partial_update"]:
             return CourseUpdateSerializer
         return super().get_serializer_class()
 
-    @action(detail=True, methods=["post"], serializer_class=serializers.Serializer)
+    @action(
+        detail=True,
+        methods=["post"],
+        serializer_class=serializers.Serializer,
+        permission_classes=[IsCourseInstructor],
+    )
     def import_students_from_lms(self, request, pk=None):
         course = self.get_object()
         import_students_from_canvas(course)
         return Response(status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["post"], serializer_class=ExportTeamSerializer)
+    @action(
+        detail=True,
+        methods=["post"],
+        serializer_class=ExportTeamSerializer,
+        permission_classes=[IsCourseInstructor],
+    )
     def export_team_to_lms(self, request, pk=None):
         serializer = ExportTeamSerializer(instance=self.get_object(), data=request.data)
 
@@ -84,13 +104,23 @@ class CourseViewSet(viewsets.ModelViewSet):
         export_team_to_canvas(team_set)
         return Response(status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["post"], serializer_class=serializers.Serializer)
+    @action(
+        detail=True,
+        methods=["post"],
+        serializer_class=serializers.Serializer,
+        permission_classes=[IsCourseInstructor],
+    )
     def create_opt_in_quiz_lms(self, request, pk=None):
         course = self.get_object()
         create_opt_in_quiz_canvas(course)
         return Response(status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["get"], serializer_class=serializers.Serializer)
+    @action(
+        detail=True,
+        methods=["get"],
+        serializer_class=OnboardingProgressSerializer,
+        permission_classes=[IsCourseInstructor],
+    )
     def get_onboarding_progress(self, request, pk=None):
         serializer = OnboardingProgressSerializer(
             instance=self.get_object(), data=request.data
@@ -100,19 +130,34 @@ class CourseViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # Study buddy specific function
-    @action(detail=True, methods=["post"], serializer_class=serializers.Serializer)
+    @action(
+        detail=True,
+        methods=["post"],
+        serializer_class=serializers.Serializer,
+        permission_classes=[IsCourseInstructor],
+    )
     def import_gradebook_attribute_from_lms(self, request, pk=None):
         course = self.get_object()
         import_gradebook_attribute_from_canvas(course)
         return Response(status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["post"], serializer_class=serializers.Serializer)
+    @action(
+        detail=True,
+        methods=["post"],
+        serializer_class=serializers.Serializer,
+        permission_classes=[IsCourseInstructor],
+    )
     def generate_teams(self, request, pk=None):
         course = self.get_object()
         generate_teams(course)
         return Response(status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["get"], serializer_class=serializers.Serializer)
+    @action(
+        detail=True,
+        methods=["get"],
+        serializer_class=CourseTeamSetsSerializer,
+        permission_classes=[IsCourseInstructor],
+    )
     def get_team_sets(self, request, pk=None):
         serializer = CourseTeamSetsSerializer(
             instance=self.get_object(), data=request.data
@@ -121,19 +166,15 @@ class CourseViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=["get"], serializer_class=serializers.Serializer)
+    @action(
+        detail=True,
+        methods=["get"],
+        serializer_class=serializers.Serializer,
+        permission_classes=[IsCourseInstructor],
+        url_path="team-sets/(?P<team_set_pk>\d+)",
+    )
     def get_teams(self, request, pk=None, team_set_pk=None):
-        try:
-            team_set = self.get_object().team_sets.get(pk=team_set_pk)
-        except TeamSet.DoesNotExist:
-            return Response(
-                {
-                    "non_field_errors": [
-                        f"Could not find TeamSet with id ({team_set_pk}) in Course ({pk})."
-                    ]
-                },
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        team_set = get_object_or_404(self.get_object().team_sets, pk=team_set_pk)
 
         serializer = DisplaySingleTeamSetSerializer(
             instance=team_set, data=request.data
@@ -141,3 +182,23 @@ class CourseViewSet(viewsets.ModelViewSet):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(
+        detail=True,
+        methods=["get"],
+        serializer_class=CourseMemberSerializer,
+        pagination_class=ExamplePagination,
+        permission_classes=[IsCourseInstructor],
+        url_path="students",
+    )
+    def get_students_by_course(self, request, pk=None):
+        queryset = self.get_object().course_members.filter(role=UserRole.STUDENT)
+        queryset = FilterStudents().filter_queryset(self.request, queryset, self)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        else:
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
