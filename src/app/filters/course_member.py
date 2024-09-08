@@ -1,8 +1,8 @@
-from django.db.models import F
-from django.db.models import Q
+from django.db.models import F, Func, Q, Value
+from django.db.models.functions import Substr
 from rest_framework import filters
-from django.db.models import Value, CharField
-from django.db.models.functions import Concat
+
+from teamable.settings import DEBUG
 
 
 class FilterStudents(filters.BaseFilterBackend):
@@ -15,13 +15,24 @@ class FilterStudents(filters.BaseFilterBackend):
     def sort_queryset(self, request, queryset, view):
         sort_param = request.query_params.get("sort", None)
         if sort_param:
-            field, order = sort_param.rsplit(".", 1)
+            """
+            To create temporary fields for first and last name to enable sorting by them individually.
+            SQLite is used for local development, and has the INSTR function for this.
+            PostgresSQL is used on prod and has the POSITION function for this
+            """
+            function_name = "INSTR" if DEBUG else "POSITION"
+            queryset = queryset.annotate(
+                first_space_position=Func(F("name"), Value(" "), function=function_name),
+                first_name=Substr(F("name"), 1, F("first_space_position") - 1),
+                last_name=Substr(F("name"), F("first_space_position") + 1),
+            ).order_by("first_name")
+
+            field, order = sort_param.rsplit(".")
             ordering = None
-            # todo: fix sorting
             sort_mappings = {
-                "firstname": "user__first_name",
-                "lastname": "user__last_name",
-                "id": "user__id",
+                "firstName": "first_name",
+                "lastName": "last_name",
+                "id": "lms_id",
             }
 
             db_field = sort_mappings.get(field, None)
@@ -30,7 +41,6 @@ class FilterStudents(filters.BaseFilterBackend):
                     ordering = F(db_field).asc(nulls_last=True)
                 elif order.lower() == "desc":
                     ordering = F(db_field).desc(nulls_last=True)
-
             queryset = queryset.order_by(ordering)
         return queryset
 
@@ -38,19 +48,10 @@ class FilterStudents(filters.BaseFilterBackend):
         search_param = request.query_params.get("search", None)
 
         if search_param:
-            search_mappings = {
-                "id": ("id", str),
-            }
-            queries = []
-            for field, (query_param, expected_type) in search_mappings.items():
-                try:
-                    if expected_type == str:
-                        queries.append(
-                            Q(**{query_param + "__icontains": str(search_param)})
-                        )
-                except ValueError:
-                    continue
-            queries.append(Q(name__icontains=str(search_param)))
+            queries = [
+                Q(lms_id__icontains=str(search_param)),
+                Q(name__icontains=str(search_param))
+            ]
             query = Q()
             for condition in queries:
                 query |= condition
