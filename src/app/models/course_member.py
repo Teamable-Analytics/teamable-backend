@@ -4,6 +4,7 @@ import jwt
 from accounts.models import MyUser
 from app.models.base_models import BaseModel
 from app.models.course import Course
+from app.models.organization import LMSTypeOptions
 from app.models.section import Section
 
 
@@ -35,6 +36,15 @@ class CourseMember(BaseModel):
     role = models.CharField(max_length=50, choices=UserRole.choices)
     name = models.CharField(max_length=50, null=True, blank=True)
     lms_id = models.CharField(max_length=50, null=True, blank=True, unique=True)
+
+    @property
+    def lms_link(self):
+        org = self.course.organization
+        if org.lms_type == LMSTypeOptions.CANVAS:
+            if not org.lms_api_url or not self.course.lms_course_id or not self.lms_id:
+                return None
+            return f"{org.lms_api_url}/courses/{self.course.lms_course_id}/users/{self.lms_id}"
+        return None
 
     def create_jwt_token(self):
         """
