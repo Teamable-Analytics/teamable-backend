@@ -22,7 +22,9 @@ class FilterStudents(filters.BaseFilterBackend):
             """
             function_name = "INSTR" if DEBUG else "POSITION"
             queryset = queryset.annotate(
-                first_space_position=Func(F("name"), Value(" "), function=function_name),
+                first_space_position=Func(
+                    F("name"), Value(" "), function=function_name
+                ),
                 first_name=Substr(F("name"), 1, F("first_space_position") - 1),
                 last_name=Substr(F("name"), F("first_space_position") + 1),
             ).order_by("first_name")
@@ -50,7 +52,7 @@ class FilterStudents(filters.BaseFilterBackend):
         if search_param:
             queries = [
                 Q(lms_id__icontains=str(search_param)),
-                Q(name__icontains=str(search_param))
+                Q(name__icontains=str(search_param)),
             ]
             query = Q()
             for condition in queries:
