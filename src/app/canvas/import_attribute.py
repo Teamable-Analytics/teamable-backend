@@ -1,4 +1,8 @@
 from typing import Dict, List
+
+from canvasapi import Canvas
+from canvasapi.assignment import Assignment, AssignmentGroup
+
 from app.models.attribute import (
     Attribute,
     AttributeOption,
@@ -6,12 +10,8 @@ from app.models.attribute import (
     AttributeValueType,
 )
 from app.models.course import Course
-from canvasapi import Canvas
-from canvasapi.enrollment import Enrollment
-from canvasapi.assignment import Assignment, AssignmentGroup
-
+from app.models.course_member import UserRole
 from app.models.organization import LMSTypeOptions
-from app.views import course_member
 
 ABOVE_AVERAGE_LABEL = "Above Average"
 BELOW_AVERAGE_LABEL = "Below Average"
@@ -64,7 +64,7 @@ def import_gradebook_attribute_from_canvas(course: Course):
     canvas = Canvas(course.organization.lms_api_url, course.lms_access_token)
     canvas_course = canvas.get_course(course.lms_course_id)
 
-    course_members = course.course_members.all()
+    course_members = course.course_members.filter(role=UserRole.STUDENT)
     assignments: List[Assignment] = list(canvas_course.get_assignments())[:5]
     assignment_groups: List[AssignmentGroup] = list(
         canvas_course.get_assignment_groups()
