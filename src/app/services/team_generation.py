@@ -3,7 +3,7 @@ from app.models.course import Course
 import requests
 import uuid
 
-from app.models.course_member import CourseMember
+from app.models.course_member import CourseMember, UserRole
 from app.models.team import Team, TeamSet
 
 TEAM_GENERATION_API_URL = "https://api.teamableanalytics.ok.ubc.ca/api/generate/teams/"
@@ -19,10 +19,14 @@ def generate_teams(course: Course):
     below_average = attribute.options.get(label=BELOW_AVERAGE_LABEL)
 
     above_average_members = list(
-        above_average.attribute_responses.values_list("course_member", flat=True)
+        above_average.attribute_responses.filter(
+            course_member__role=UserRole.STUDENT
+        ).values_list("course_member", flat=True)
     )
     below_average_members = list(
-        below_average.attribute_responses.values_list("course_member", flat=True)
+        below_average.attribute_responses.filter(
+            course_member__role=UserRole.STUDENT
+        ).values_list("course_member", flat=True)
     )
 
     # req = requests.post(
@@ -64,7 +68,10 @@ def generate_teams(course: Course):
     #     },
     # )
 
-    team_set = TeamSet.objects.create(course=course, name="Studdy Buddy")
+    num_course_team_sets = course.team_sets.count()
+    team_set = TeamSet.objects.create(
+        course=course, name=f"Study Buddy - {num_course_team_sets + 1}"
+    )
 
     teams = []
     for course_member_id in above_average_members:
