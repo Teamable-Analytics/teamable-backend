@@ -70,7 +70,7 @@ def generate_teams(course: Course):
 
     num_course_team_sets = course.team_sets.count()
     team_set = TeamSet.objects.create(
-        course=course, name=f"Study Buddy ({num_course_team_sets + 1})"
+        course=course, name=f"Study Buddy - {num_course_team_sets + 1}"
     )
 
     teams = []
