@@ -35,6 +35,10 @@ def export_team_to_canvas(team_set: TeamSet):
             group.create_membership(int(member.lms_id))
 
 
+# arbitrary limit so this does not run infinitely if the error is not the "same name" error
+MAX_RETIRES = 20
+
+
 def create_group_category_with_unique_name(
     canvas_course: Course, base_name: str
 ) -> GroupCategory:
@@ -46,6 +50,9 @@ def create_group_category_with_unique_name(
             name = f"{base_name} ({counter})" if counter > 1 else f"{base_name}"
             group_category = canvas_course.create_group_category(name=name)
         except exceptions.BadRequest as e:
+            # fixme: we should probably be more specific about this error
             counter += 1
+            if counter > MAX_RETIRES:
+                raise e
 
     return group_category
