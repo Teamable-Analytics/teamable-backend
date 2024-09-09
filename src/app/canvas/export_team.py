@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from canvasapi import Canvas, exceptions
 from canvasapi.course import Course
 from canvasapi.group import GroupCategory
