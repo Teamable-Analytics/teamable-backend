@@ -36,8 +36,7 @@ def import_students_from_canvas(course: Course):
         ]
 
     for student in students:
-        # todo: make this upsert, not get and create
-        CourseMember.add_course_member(
+        CourseMember.upsert_course_member(
             user_id=None,
             name=student.user["name"],
             lms_id=student.user["id"],
