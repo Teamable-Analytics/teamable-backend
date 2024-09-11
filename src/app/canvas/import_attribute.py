@@ -118,19 +118,19 @@ def import_gradebook_attribute_from_canvas(course: Course):
             AttributeResponse.objects.update_or_create(
                 course_member=student,
                 defaults={
-                    'attribute_option_id': above_option.pk,
+                    "attribute_option_id": above_option.pk,
                 },
                 create_defaults={
-                    'attribute_option_id': above_option.pk,
+                    "attribute_option_id": above_option.pk,
                 },
             )
         else:
             AttributeResponse.objects.update_or_create(
                 course_member=student,
                 defaults={
-                    'attribute_option_id': below_option.pk,
+                    "attribute_option_id": below_option.pk,
                 },
                 create_defaults={
-                    'attribute_option_id': below_option.pk,
+                    "attribute_option_id": below_option.pk,
                 },
             )
