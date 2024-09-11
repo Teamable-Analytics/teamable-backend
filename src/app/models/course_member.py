@@ -40,8 +40,12 @@ class CourseMember(BaseModel):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['course', 'lms_id'], name='unique_lms_id_in_course'),
-            models.UniqueConstraint(fields=['course', 'sis_user_id'], name='unique_sis_user_id_in_course')
+            models.UniqueConstraint(
+                fields=["course", "lms_id"], name="unique_lms_id_in_course"
+            ),
+            models.UniqueConstraint(
+                fields=["course", "sis_user_id"], name="unique_sis_user_id_in_course"
+            ),
         ]
 
     @property
