@@ -34,16 +34,18 @@ class FilterStudents(filters.BaseFilterBackend):
             sort_mappings = {
                 "firstName": "first_name",
                 "lastName": "last_name",
-                "id": "lms_id",
+                "id": "sis_user_id",
             }
 
             db_field = sort_mappings.get(field, None)
-            if db_field:
+            if db_field is not None:
                 if order.lower() == "asc":
                     ordering = F(db_field).asc(nulls_last=True)
                 elif order.lower() == "desc":
                     ordering = F(db_field).desc(nulls_last=True)
-            queryset = queryset.order_by(ordering)
+
+                queryset = queryset.order_by(ordering)
+
         return queryset
 
     def search_queryset(self, request, queryset, view):
@@ -51,7 +53,7 @@ class FilterStudents(filters.BaseFilterBackend):
 
         if search_param:
             queries = [
-                Q(lms_id__icontains=str(search_param)),
+                Q(sis_user_id__icontains=str(search_param)),
                 Q(name__icontains=str(search_param)),
             ]
             query = Q()

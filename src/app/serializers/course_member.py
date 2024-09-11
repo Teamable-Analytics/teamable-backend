@@ -6,10 +6,11 @@ from app.serializers.section import SectionSerializer
 
 class CourseMemberSerializer(serializers.ModelSerializer):
     sections = SectionSerializer(many=True, read_only=True)
+    lms_link = serializers.CharField(read_only=True)
 
     class Meta:
         model = CourseMember
-        fields = ("id", "lms_id", "name", "role", "lms_link", "sections")
+        fields = ("id", "lms_id", "sis_user_id", "name", "role", "lms_link", "sections")
 
 
 class DisplayCourseMemberSerializer(serializers.ModelSerializer):
@@ -17,7 +18,7 @@ class DisplayCourseMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseMember
-        fields = ("id", "lms_id", "name", "role", "lms_link")
+        fields = ("id", "lms_id", "sis_user_id", "name", "role", "lms_link")
 
 
 class CourseMemberListSerializer(serializers.ModelSerializer):
