@@ -91,28 +91,6 @@ class CourseMember(BaseModel):
         self.save()
 
     @classmethod
-    def add_course_member(
-        cls,
-        user_id: str | None,
-        name: str,
-        lms_id: str,
-        sis_user_id: str,
-        course_id: str,
-        role: UserRole,
-    ):
-        course_member = cls.objects.get_or_create(
-            lms_id=lms_id,
-            defaults={
-                "user_id": user_id,
-                "name": name,
-                "course_id": course_id,
-                "role": role,
-                "sis_user_id": sis_user_id,
-            },
-        )
-        return course_member
-
-    @classmethod
     def upsert_course_member(
         cls,
         user_id: str | None,
