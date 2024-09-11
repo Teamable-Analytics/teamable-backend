@@ -114,13 +114,13 @@ class CourseMember(BaseModel):
 
     @classmethod
     def upsert_course_member(
-            cls,
-            user_id: str | None,
-            name: str,
-            lms_id: str,
-            sis_user_id: str,
-            course_id: str,
-            role: UserRole,
+        cls,
+        user_id: str | None,
+        name: str,
+        lms_id: str,
+        sis_user_id: str,
+        course_id: str,
+        role: UserRole,
     ):
         course_member, created = cls.objects.update_or_create(
             lms_id=lms_id,
