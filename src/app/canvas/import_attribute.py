@@ -95,12 +95,15 @@ def import_gradebook_attribute_from_canvas(course: Course):
             if assignment.grading_type != "points":
                 continue
 
+            if not assignment.points_possible:
+                continue
+
             weight = assignment_group_weights[assignment.assignment_group_id]
             total = assignment_group_totals[assignment.assignment_group_id]
 
             try:
                 grade = float(assignment.get_submission(student.lms_id).score)
-            except:
+            except Exception as e:
                 grade = 0
 
             student_grades[student.pk] += (grade * weight / total) if total else 0
@@ -112,10 +115,22 @@ def import_gradebook_attribute_from_canvas(course: Course):
 
     for student in course_members:
         if student_grades[student.pk] >= average_grade:
-            AttributeResponse.objects.create(
-                course_member=student, attribute_option=above_option
+            AttributeResponse.objects.update_or_create(
+                course_member=student,
+                defaults={
+                    "attribute_option_id": above_option.pk,
+                },
+                create_defaults={
+                    "attribute_option_id": above_option.pk,
+                },
             )
         else:
-            AttributeResponse.objects.create(
-                course_member=student, attribute_option=below_option
+            AttributeResponse.objects.update_or_create(
+                course_member=student,
+                defaults={
+                    "attribute_option_id": below_option.pk,
+                },
+                create_defaults={
+                    "attribute_option_id": below_option.pk,
+                },
             )
