@@ -49,10 +49,11 @@ class TeamSetSerializer(serializers.ModelSerializer):
 class DisplaySingleTeamSetSerializer(serializers.ModelSerializer):
     teams = DisplaySingleTeamSerializer(many=True, read_only=True)
     name = serializers.CharField(read_only=True)
+    unassigned_students = CourseMemberSerializer(many=True, read_only=True)
 
     class Meta:
         model = TeamSet
-        fields = ("id", "name", "teams")
+        fields = ("id", "name", "teams", "unassigned_students")
 
 
 class DisplayManyTeamSetSerializer(serializers.ModelSerializer):
