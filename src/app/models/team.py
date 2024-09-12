@@ -40,16 +40,14 @@ class TeamSet(BaseModel):
     @property
     def assigned_students(self) -> QuerySet[CourseMember]:
         return self.course.course_members.filter(
-            role=UserRole.STUDENT,
-            teams__team_set=self
+            role=UserRole.STUDENT, teams__team_set=self
         ).distinct()
 
     @property
     def unassigned_students(self) -> QuerySet[CourseMember]:
         assigned_course_members = self.assigned_students
         return self.course.course_members.filter(
-            Q(role=UserRole.STUDENT),
-            ~Q(id__in=assigned_course_members)
+            Q(role=UserRole.STUDENT), ~Q(id__in=assigned_course_members)
         )
 
 
