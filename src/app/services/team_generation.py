@@ -1,6 +1,7 @@
+from typing import Tuple, List, Union
+
 from app.canvas.import_attribute import ABOVE_AVERAGE_LABEL, BELOW_AVERAGE_LABEL
 from app.models.course import Course
-import requests
 import uuid
 
 from app.models.course_member import CourseMember, UserRole
@@ -73,6 +74,15 @@ def generate_teams(course: Course):
         course=course, name=f"Study Buddy - {num_course_team_sets + 1}"
     )
 
+    # if less than a 3rd of the students are above or below average
+    if (2 * len(above_average_members) < len(below_average_members)) or (
+        2 * len(below_average_members) < len(above_average_members)
+    ):
+        imbalanced_students_strategy(
+            team_set, above_average_members, below_average_members
+        )
+        return
+
     teams = []
     for course_member_id in above_average_members:
         team = Team.objects.create(
@@ -87,3 +97,36 @@ def generate_teams(course: Course):
 
     for i, course_member_id in enumerate(below_average_members):
         teams[i % len(teams)].members.add(CourseMember.objects.get(id=course_member_id))
+
+
+def imbalanced_students_strategy(
+    team_set: TeamSet, above_average_members, below_average_members
+):
+    ordered_students = [*above_average_members, *below_average_members]
+    student_pairs: List[Union[Tuple[int, int], Tuple[int, int, int]]] = []
+
+    while len(ordered_students) > 0:
+        if len(ordered_students) == 3:
+            student_pairs.append(
+                (ordered_students[0], ordered_students[1], ordered_students[2])
+            )
+            break
+
+        first_student = ordered_students.pop(0)
+        last_student = ordered_students.pop()
+        student_pairs.append((first_student, last_student))
+
+    teams = []
+    for student_pair in student_pairs:
+        team = Team.objects.create(
+            slug=uuid.uuid4(),
+            name=f"Team {len(teams) + 1}",
+            max_people=10,
+            min_people=1,
+            team_set=team_set,
+        )
+
+        for student in student_pair:
+            team.members.add(CourseMember.objects.get(id=student))
+
+        teams.append(team)
