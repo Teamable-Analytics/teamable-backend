@@ -40,7 +40,11 @@ def import_students_from_canvas(course: Course):
             user_id=None,
             name=student.user["name"],
             lms_id=student.user["id"],
-            sis_user_id=student.sis_user_id,
+            sis_user_id=(
+                student.sis_user_id
+                if hasattr(student, "sis_user_id") and student.sis_user_id is not None
+                else None
+            ),
             course_id=course.pk,
             role=UserRole.STUDENT,
         )
