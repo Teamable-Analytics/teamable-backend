@@ -1,9 +1,11 @@
+from django.db.models import QuerySet, Q
+
 from app.models.attribute import Attribute, AttributeOption
 from app.models.base_models import BaseModel
 from django.db import models
 from typing import TYPE_CHECKING
 from app.models.course import Course
-from app.models.course_member import CourseMember
+from app.models.course_member import CourseMember, UserRole
 
 if TYPE_CHECKING:
     from django.db.models.manager import RelatedManager
@@ -34,6 +36,19 @@ class TeamSet(BaseModel):
 
     if TYPE_CHECKING:
         teams: RelatedManager["Team"]
+
+    @property
+    def assigned_students(self) -> QuerySet[CourseMember]:
+        return self.course.course_members.filter(
+            role=UserRole.STUDENT, teams__team_set=self
+        ).distinct()
+
+    @property
+    def unassigned_students(self) -> QuerySet[CourseMember]:
+        assigned_course_members = self.assigned_students
+        return self.course.course_members.filter(
+            Q(role=UserRole.STUDENT), ~Q(id__in=assigned_course_members)
+        )
 
 
 class Team(BaseModel):
