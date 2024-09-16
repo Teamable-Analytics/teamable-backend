@@ -32,7 +32,9 @@ if DEBUG:
     ALLOWED_HOSTS = ["*"]
 else:
     ALLOWED_HOSTS = os.environ["SERVER_NAME"].split()
-    CSRF_TRUSTED_ORIGINS = list(map(lambda x: f"https://{x}" , os.environ["SERVER_NAME"]))
+    CSRF_TRUSTED_ORIGINS = list(
+        map(lambda x: f"https://{x}", os.environ["SERVER_NAME"].split())
+    )
 
 
 # Application definition
