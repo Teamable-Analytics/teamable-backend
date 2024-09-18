@@ -1,8 +1,5 @@
-from django.db.models import F, Func, Q, Value
-from django.db.models.functions import Substr
+from django.db.models import F, Q
 from rest_framework import filters
-
-from teamable.settings import DEBUG
 
 
 class FilterStudents(filters.BaseFilterBackend):
@@ -15,25 +12,11 @@ class FilterStudents(filters.BaseFilterBackend):
     def sort_queryset(self, request, queryset, view):
         sort_param = request.query_params.get("sort", None)
         if sort_param:
-            """
-            To create temporary fields for first and last name to enable sorting by them individually.
-            SQLite is used for local development, and has the INSTR function for this.
-            PostgresSQL is used on prod and has the POSITION function for this
-            """
-            function_name = "INSTR" if DEBUG else "POSITION"
-            queryset = queryset.annotate(
-                first_space_position=Func(
-                    F("name"), Value(" "), function=function_name
-                ),
-                first_name=Substr(F("name"), 1, F("first_space_position") - 1),
-                last_name=Substr(F("name"), F("first_space_position") + 1),
-            ).order_by("first_name")
-
             field, order = sort_param.rsplit(".")
             ordering = None
             sort_mappings = {
-                "firstName": "first_name",
-                "lastName": "last_name",
+                "first_name": "first_name",
+                "last_name": "last_name",
                 "id": "sis_user_id",
             }
 

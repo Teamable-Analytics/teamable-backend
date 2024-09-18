@@ -34,7 +34,8 @@ class CourseMember(BaseModel):
         Course, on_delete=models.CASCADE, related_name="course_members"
     )
     role = models.CharField(max_length=50, choices=UserRole.choices)
-    name = models.CharField(max_length=50, null=True, blank=True)
+    first_name = models.CharField(max_length=50, null=True, blank=True)
+    last_name = models.CharField(max_length=50, null=True, blank=True)
     lms_id = models.CharField(max_length=50, null=True, blank=True)
     sis_user_id = models.CharField(max_length=50, null=True, blank=True)
 
@@ -47,6 +48,10 @@ class CourseMember(BaseModel):
                 fields=["course", "sis_user_id"], name="unique_sis_user_id_in_course"
             ),
         ]
+
+    @property
+    def name(self):
+        return f"{self.first_name} {self.last_name}"
 
     @property
     def lms_link(self):
@@ -94,7 +99,8 @@ class CourseMember(BaseModel):
     def upsert_course_member(
         cls,
         user_id: str | None,
-        name: str,
+        first_name: str,
+        last_name: str,
         lms_id: str,
         sis_user_id: str,
         course_id: str,
@@ -104,14 +110,16 @@ class CourseMember(BaseModel):
             lms_id=lms_id,
             defaults={
                 "user_id": user_id,
-                "name": name,
+                "first_name": first_name,
+                "last_name": last_name,
                 "course_id": course_id,
                 "role": role,
                 "sis_user_id": sis_user_id,
             },
             create_defaults={
                 "user_id": user_id,
-                "name": name,
+                "first_name": first_name,
+                "last_name": last_name,
                 "course_id": course_id,
                 "role": role,
                 "sis_user_id": sis_user_id,
