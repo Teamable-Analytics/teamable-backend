@@ -90,19 +90,24 @@ def import_gradebook_attribute_from_canvas(course: Course):
     for student in course_members:
         student_grades[student.pk] = 0
 
-    for student in course_members:
-        for assignment in assignments:
-            if assignment.grading_type != "points":
-                continue
+    for assignment in assignments:
+        if assignment.grading_type != "points":
+            continue
 
-            if not assignment.points_possible:
-                continue
+        if not assignment.points_possible:
+            continue
 
-            weight = assignment_group_weights[assignment.assignment_group_id]
-            total = assignment_group_totals[assignment.assignment_group_id]
+        weight = assignment_group_weights[assignment.assignment_group_id]
+        total = assignment_group_totals[assignment.assignment_group_id]
 
+        submissions = list(assignment.get_submissions())
+        submission_grade = {
+            str(submission.user_id): submission.score for submission in submissions
+        }
+
+        for student in course_members:
             try:
-                grade = float(assignment.get_submission(student.lms_id).score)
+                grade = float(submission_grade.get(student.lms_id))
             except Exception as e:
                 grade = 0
 

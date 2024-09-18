@@ -74,34 +74,6 @@ def generate_teams(course: Course):
         course=course, name=f"Study Buddy - {num_course_team_sets + 1}"
     )
 
-    # if less than a 3rd of the students are above or below average
-    if (2 * len(above_average_members) < len(below_average_members)) or (
-        2 * len(below_average_members) < len(above_average_members)
-    ):
-        imbalanced_students_strategy(
-            team_set, above_average_members, below_average_members
-        )
-        return
-
-    teams = []
-    for course_member_id in above_average_members:
-        team = Team.objects.create(
-            slug=uuid.uuid4(),
-            name=f"Team {len(teams) + 1}",
-            max_people=10,
-            min_people=1,
-            team_set=team_set,
-        )
-        team.members.add(CourseMember.objects.get(id=course_member_id))
-        teams.append(team)
-
-    for i, course_member_id in enumerate(below_average_members):
-        teams[i % len(teams)].members.add(CourseMember.objects.get(id=course_member_id))
-
-
-def imbalanced_students_strategy(
-    team_set: TeamSet, above_average_members, below_average_members
-):
     ordered_students = [*above_average_members, *below_average_members]
     student_pairs: List[Union[Tuple[int, int], Tuple[int, int, int]]] = []
 
