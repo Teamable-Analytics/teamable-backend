@@ -101,7 +101,9 @@ def import_gradebook_attribute_from_canvas(course: Course):
         total = assignment_group_totals[assignment.assignment_group_id]
 
         submissions = list(assignment.get_submissions())
-        submission_grade = {str(submission.user_id): submission.score for submission in submissions}
+        submission_grade = {
+            str(submission.user_id): submission.score for submission in submissions
+        }
 
         for student in course_members:
             try:
