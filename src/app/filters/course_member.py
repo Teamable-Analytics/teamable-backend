@@ -37,7 +37,8 @@ class FilterStudents(filters.BaseFilterBackend):
         if search_param:
             queries = [
                 Q(sis_user_id__icontains=str(search_param)),
-                Q(name__icontains=str(search_param)),
+                Q(first_name__icontains=str(search_param)),
+                Q(last_name__icontains=str(search_param)),
             ]
             query = Q()
             for condition in queries:
