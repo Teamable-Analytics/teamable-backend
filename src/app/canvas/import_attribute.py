@@ -65,7 +65,7 @@ def import_gradebook_attribute_from_canvas(course: Course):
     canvas_course = canvas.get_course(course.lms_course_id)
 
     course_members = course.course_members.filter(role=UserRole.STUDENT)
-    assignments: List[Assignment] = list(canvas_course.get_assignments())[:5]
+    assignments: List[Assignment] = list(canvas_course.get_assignments())
     assignment_groups: List[AssignmentGroup] = list(
         canvas_course.get_assignment_groups()
     )
