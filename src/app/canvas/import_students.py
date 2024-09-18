@@ -36,9 +36,12 @@ def import_students_from_canvas(course: Course):
         ]
 
     for student in students:
+        last_name, first_name = student.user["sortable_name"].split(",")
+
         CourseMember.upsert_course_member(
             user_id=None,
-            name=student.user["name"],
+            first_name=first_name,
+            last_name=last_name,
             lms_id=student.user["id"],
             sis_user_id=(
                 student.sis_user_id
