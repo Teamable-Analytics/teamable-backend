@@ -30,6 +30,14 @@ class Attribute(BaseModel):
     course = models.ForeignKey(
         "app.Course", on_delete=models.CASCADE, related_name="attributes"
     )
+    managed = models.BooleanField(
+        default=False,
+        blank=True,
+        help_text=(
+            "Denotes that an attribute is managed manually. Students do not self-report this data, "
+            "nor is it editable to the instructor in the same ways that a normal attribute would be."
+        ),
+    )
 
     @property
     def has_student_responses(self):
