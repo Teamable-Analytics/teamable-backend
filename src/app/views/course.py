@@ -170,7 +170,7 @@ class CourseViewSet(
         methods=["get"],
         serializer_class=serializers.Serializer,
         permission_classes=[IsCourseInstructor],
-        url_path="team-sets/(?P<team_set_pk>\d+)",
+        url_path="team-sets/(?P<team_set_pk>\d+)",  # type: ignore
     )
     def get_teams(self, request, pk=None, team_set_pk=None):
         team_set = get_object_or_404(self.get_object().team_sets, pk=team_set_pk)

@@ -5,6 +5,7 @@ from canvasapi.assignment import Assignment, AssignmentGroup
 
 from app.models.attribute import (
     Attribute,
+    AttributeManageType,
     AttributeOption,
     AttributeResponse,
     AttributeValueType,
@@ -12,25 +13,28 @@ from app.models.attribute import (
 from app.models.course import Course
 from app.models.course_member import UserRole
 from app.models.organization import LMSTypeOptions
+from app.views import attribute
 
 ABOVE_AVERAGE_LABEL = "Above Average"
 BELOW_AVERAGE_LABEL = "Below Average"
 
 
 # Study buddy specific function
-def create_gradebook_attribute(course: Course):
-    if (
-        course.organization is None
-        or course.organization.lms_type != LMSTypeOptions.CANVAS
-    ):
-        return
+def get_or_create_gradebook_attribute(course: Course, assignment: Assignment):
+    attribute_name = f"{assignment.name} - {assignment.id}"
+
+    if course.attributes.filter(
+        name=attribute_name, manage_type=AttributeManageType.GRADE
+    ).exists():
+        return course.attributes.get(name=attribute_name)
 
     attribute = Attribute.objects.create(
-        name="Gradebook",
-        question="Gradebook?",
+        name=attribute_name,
+        question="",
         value_type=AttributeValueType.STRING,
         max_selections=1,
         course=course,
+        manage_type=AttributeManageType.GRADE,
     )
 
     AttributeOption.objects.create(
@@ -45,8 +49,7 @@ def create_gradebook_attribute(course: Course):
         value="Below",
     )
 
-    course.grade_book_attribute = attribute
-    course.save()
+    return attribute
 
 
 # Study buddy specific function
@@ -57,38 +60,11 @@ def import_gradebook_attribute_from_canvas(course: Course):
     ):
         return
 
-    if course.grade_book_attribute is None:
-        create_gradebook_attribute(course)
-    assert course.grade_book_attribute is not None
-
     canvas = Canvas(course.organization.lms_api_url, course.lms_access_token)
     canvas_course = canvas.get_course(course.lms_course_id)
 
     course_members = course.course_members.filter(role=UserRole.STUDENT)
     assignments: List[Assignment] = list(canvas_course.get_assignments())
-    assignment_groups: List[AssignmentGroup] = list(
-        canvas_course.get_assignment_groups()
-    )
-
-    student_grades: Dict[int, float] = {}
-    assignment_group_weights: Dict[int, float] = {}
-    assignment_group_totals: Dict[int, float] = {}
-
-    for group in assignment_groups:
-        assignment_group_weights[group.id] = group.group_weight
-        assignment_group_totals[group.id] = 0
-
-    for assignment in assignments:
-        if assignment.grading_type != "points":
-            continue
-
-        points_possible = (
-            assignment.points_possible if assignment.points_possible else 0
-        )
-        assignment_group_totals[assignment.assignment_group_id] += points_possible
-
-    for student in course_members:
-        student_grades[student.pk] = 0
 
     for assignment in assignments:
         if assignment.grading_type != "points":
@@ -97,45 +73,35 @@ def import_gradebook_attribute_from_canvas(course: Course):
         if not assignment.points_possible:
             continue
 
-        weight = assignment_group_weights[assignment.assignment_group_id]
-        total = assignment_group_totals[assignment.assignment_group_id]
-
         submissions = list(assignment.get_submissions())
-        submission_grade = {
-            str(submission.user_id): submission.score for submission in submissions
-        }
-
-        for student in course_members:
-            try:
-                grade = float(submission_grade.get(student.lms_id))
-            except Exception as e:
-                grade = 0
-
-            student_grades[student.pk] += (grade * weight / total) if total else 0
-
-    average_grade = sum(student_grades.values()) / len(student_grades)
-
-    above_option = course.grade_book_attribute.options.get(value="Above")
-    below_option = course.grade_book_attribute.options.get(value="Below")
-
-    for student in course_members:
-        if student_grades[student.pk] >= average_grade:
-            AttributeResponse.objects.update_or_create(
-                course_member=student,
-                defaults={
-                    "attribute_option_id": above_option.pk,
-                },
-                create_defaults={
-                    "attribute_option_id": above_option.pk,
-                },
+        submission_grade = [
+            (
+                course_members.get(lms_id=submission.user_id),
+                submission.score if submission.score is not None else 0,
             )
-        else:
+            for submission in submissions
+            if course_members.filter(lms_id=submission.user_id).exists()
+        ]
+
+        sorted_members = [
+            course_member
+            for (course_member, _) in sorted(submission_grade, key=lambda x: x[1])
+        ]
+        median_index = (len(sorted_members) + 1) // 2
+
+        attribute = get_or_create_gradebook_attribute(course, assignment)
+        above_option = attribute.options.get(value="Above")
+        below_option = attribute.options.get(value="Below")
+
+        for i, course_member in enumerate(sorted_members):
+            attribute_option = above_option if i >= median_index else below_option
             AttributeResponse.objects.update_or_create(
-                course_member=student,
+                course_member=course_member,
+                attribute_option__attribute=attribute,
                 defaults={
-                    "attribute_option_id": below_option.pk,
+                    "attribute_option_id": attribute_option.pk,
                 },
                 create_defaults={
-                    "attribute_option_id": below_option.pk,
+                    "attribute_option_id": attribute_option.pk,
                 },
             )

@@ -14,9 +14,14 @@ class AttributeValueType(models.TextChoices):
     TEAM_TEMPLATE_SLUG = "TeamTemplateSlug", "TeamTemplateSlug"
 
 
+class AttributeManageType(models.TextChoices):
+    USER_MANAGED = "UserManaged", "UserManaged"
+    GRADE = "Grade", "Grade"
+
+
 class Attribute(BaseModel):
     name = models.TextField()
-    question = models.TextField()
+    question = models.TextField(blank=True)
     value_type = models.CharField(max_length=50, choices=AttributeValueType.choices)
     max_selections = models.IntegerField()
     team_set_template = models.ForeignKey(
@@ -30,6 +35,7 @@ class Attribute(BaseModel):
     course = models.ForeignKey(
         "app.Course", on_delete=models.CASCADE, related_name="attributes"
     )
+    manage_type = models.CharField(max_length=50, choices=AttributeManageType.choices)
 
     @property
     def has_student_responses(self):

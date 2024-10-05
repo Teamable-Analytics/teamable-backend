@@ -15,25 +15,15 @@ if TYPE_CHECKING:
 
 class Course(BaseModel):
     name = models.CharField(max_length=500)
-    organization = models.ForeignKey(
-        Organization, null=True, blank=True, on_delete=models.SET_NULL
-    )
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     lms_access_token = models.CharField(max_length=500, null=True, blank=True)
     lms_course_id = models.CharField(max_length=500, null=True, blank=True)
     lms_opt_in_quiz_id = models.CharField(max_length=500, null=True, blank=True)
 
-    # Study buddy specific fields
-    grade_book_attribute = models.OneToOneField["Attribute"](
-        "Attribute",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="grade_book_course",
-    )
-
     if TYPE_CHECKING:
         team_sets: RelatedManager[TeamSet]
         course_members: RelatedManager[CourseMember]
+        attributes: RelatedManager[Attribute]
 
     def has_view_permission(self, user: "MyUser") -> bool:
         return True
