@@ -10,3 +10,6 @@ class Section(BaseModel):
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name="sections"
     )
+
+    def __str__(self) -> str:
+        return f"({self.pk}) {self.name}"

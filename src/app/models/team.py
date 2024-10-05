@@ -37,6 +37,9 @@ class TeamSet(BaseModel):
     if TYPE_CHECKING:
         teams: RelatedManager["Team"]
 
+    def __str__(self) -> str:
+        return f"({self.pk}) {self.name}"
+
     @property
     def assigned_students(self) -> QuerySet[CourseMember]:
         return self.course.course_members.filter(
@@ -60,6 +63,9 @@ class Team(BaseModel):
     team_set = models.ForeignKey(
         TeamSet, on_delete=models.CASCADE, related_name="teams"
     )
+
+    def __str__(self) -> str:
+        return f"({self.pk}) {self.name}"
 
 
 class TeamRequirement(BaseModel):

@@ -25,6 +25,9 @@ class Course(BaseModel):
         course_members: RelatedManager[CourseMember]
         attributes: RelatedManager[Attribute]
 
+    def __str__(self) -> str:
+        return f"({self.pk}) {self.name}"
+
     def has_view_permission(self, user: "MyUser") -> bool:
         return True
 

@@ -37,6 +37,9 @@ class Attribute(BaseModel):
     )
     manage_type = models.CharField(max_length=50, choices=AttributeManageType.choices)
 
+    def __str__(self) -> str:
+        return f"({self.pk}) {self.name}"
+
     @property
     def has_student_responses(self):
         return self.options.exists()
@@ -61,6 +64,13 @@ class AttributeOption(BaseModel):
 
     if TYPE_CHECKING:
         attribute_responses: RelatedManager["AttributeResponse"]
+
+    def __str__(self) -> str:
+        return f"({self.pk}) {self.label} / {self.value}"
+
+    @property
+    def course(self):
+        return self.attribute.course
 
 
 class AttributeResponse(BaseModel):
