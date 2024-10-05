@@ -21,6 +21,7 @@ jobs:
             - name: Lint with Black
               run: |
                   python -m black . --check
+            - uses: jakebailey/pyright-action@v2
 
     build:
         needs: lint
