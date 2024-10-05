@@ -7,7 +7,7 @@ from app.canvas.import_attribute import import_gradebook_attribute_from_canvas
 from app.canvas.import_students import import_students_from_canvas
 from app.canvas.opt_in_quiz import create_opt_in_quiz_canvas
 from app.filters.course_member import FilterStudents
-from app.models.attribute import AttributeManageType
+from app.models.attribute import Attribute, AttributeManageType
 from app.models.course import Course
 from app.models.course_member import UserRole
 from app.models.team import TeamSet
@@ -41,7 +41,20 @@ class CourseTeamSetsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ("team_sets",)
+        fields = ["team_sets"]
+
+
+class GenerateTeamsSerializer(serializers.ModelSerializer):
+    attribute = serializers.PrimaryKeyRelatedField(queryset=Attribute.objects.all())
+
+    class Meta:
+        model = Course
+        fields = ["attribute"]
+
+    def validate_attribute(self, value):
+        if not value.course == self.instance:
+            raise serializers.ValidationError("Attribute must belong to the course")
+        return value
 
 
 class OnboardingProgressSerializer(serializers.ModelSerializer):
@@ -145,12 +158,21 @@ class CourseViewSet(
     @action(
         detail=True,
         methods=["post"],
-        serializer_class=serializers.Serializer,
+        serializer_class=GenerateTeamsSerializer,
         permission_classes=[IsCourseInstructor],
     )
     def generate_teams(self, request, pk=None):
         course = self.get_object()
-        generate_teams(course)
+
+        serializer = GenerateTeamsSerializer(instance=course, data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Pylance doesn't know that validated_data is valid after is_valid() check
+        attribute = serializer.validated_data["attribute"]  # type: ignore
+
+        generate_teams(course, attribute)
         return Response(status=status.HTTP_200_OK)
 
     @action(

@@ -1,6 +1,7 @@
 from typing import Tuple, List, Union
 
 from app.canvas.import_attribute import ABOVE_AVERAGE_LABEL, BELOW_AVERAGE_LABEL
+from app.models.attribute import Attribute
 from app.models.course import Course
 import uuid
 
@@ -10,9 +11,7 @@ from app.models.team import Team, TeamSet
 TEAM_GENERATION_API_URL = "https://api.teamableanalytics.ok.ubc.ca/api/generate/teams/"
 
 
-def generate_teams(course: Course):
-    attribute = course.grade_book_attribute
-
+def generate_teams(course: Course, attribute: Attribute):
     if attribute is None:
         return
 
