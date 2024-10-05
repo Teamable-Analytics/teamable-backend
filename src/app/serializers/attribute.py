@@ -10,12 +10,9 @@ class AttributeOptionSerializer(serializers.ModelSerializer):
 
 
 class AttributeSerializer(serializers.ModelSerializer):
-    options = AttributeOptionSerializer(many=True, read_only=True)
-    num_student_responses = serializers.IntegerField(read_only=True)
-
     class Meta:
         model = Attribute
-        fields = "__all__"
+        fields = ["id", "name"]
 
 
 class AttributeResponseSerializer(serializers.ModelSerializer):

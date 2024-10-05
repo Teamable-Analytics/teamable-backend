@@ -7,11 +7,13 @@ from app.canvas.import_attribute import import_gradebook_attribute_from_canvas
 from app.canvas.import_students import import_students_from_canvas
 from app.canvas.opt_in_quiz import create_opt_in_quiz_canvas
 from app.filters.course_member import FilterStudents
+from app.models.attribute import AttributeManageType
 from app.models.course import Course
 from app.models.course_member import UserRole
 from app.models.team import TeamSet
 from app.paginators.pagination import ExamplePagination
 from app.permissions import IsCourseInstructor
+from app.serializers.attribute import AttributeSerializer
 from app.serializers.course import CourseUpdateSerializer, CourseViewSerializer
 from app.serializers.course_member import CourseMemberSerializer
 from app.serializers.teams import (
@@ -170,7 +172,7 @@ class CourseViewSet(
         methods=["get"],
         serializer_class=serializers.Serializer,
         permission_classes=[IsCourseInstructor],
-        url_path="team-sets/(?P<team_set_pk>\d+)",  # type: ignore
+        url_path=r"team-sets/(?P<team_set_pk>\d+)",
     )
     def get_teams(self, request, pk=None, team_set_pk=None):
         team_set = get_object_or_404(self.get_object().team_sets, pk=team_set_pk)
@@ -201,3 +203,19 @@ class CourseViewSet(
         else:
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
+
+    @action(
+        detail=True,
+        methods=["get"],
+        permission_classes=[IsCourseInstructor],
+        url_path="grade-attributes",
+    )
+    def get_grade_attributes(self, request, pk=None):
+        course: Course = self.get_object()
+        grade_attributes = course.attributes.filter(
+            manage_type=AttributeManageType.GRADE
+        )
+        return Response(
+            AttributeSerializer(grade_attributes, many=True).data,
+            status=status.HTTP_200_OK,
+        )
