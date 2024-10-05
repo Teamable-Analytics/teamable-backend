@@ -11,10 +11,7 @@ from app.models.team import Team, TeamSet
 TEAM_GENERATION_API_URL = "https://api.teamableanalytics.ok.ubc.ca/api/generate/teams/"
 
 
-def generate_teams(course: Course, attribute: Attribute):
-    if attribute is None:
-        return
-
+def generate_teams(course: Course, attribute: Attribute) -> TeamSet:
     above_average = attribute.options.get(label=ABOVE_AVERAGE_LABEL)
     below_average = attribute.options.get(label=BELOW_AVERAGE_LABEL)
 
@@ -101,3 +98,5 @@ def generate_teams(course: Course, attribute: Attribute):
             team.members.add(CourseMember.objects.get(id=student))
 
         teams.append(team)
+
+    return team_set

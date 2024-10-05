@@ -172,8 +172,8 @@ class CourseViewSet(
         # Pylance doesn't know that validated_data is valid after is_valid() check
         attribute = serializer.validated_data["attribute"]  # type: ignore
 
-        generate_teams(course, attribute)
-        return Response(status=status.HTTP_200_OK)
+        team_set = generate_teams(course, attribute)
+        return Response({"team_set_id": team_set.pk}, status=status.HTTP_200_OK)
 
     @action(
         detail=True,
@@ -182,11 +182,8 @@ class CourseViewSet(
         permission_classes=[IsCourseInstructor],
     )
     def get_team_sets(self, request, pk=None):
-        serializer = CourseTeamSetsSerializer(
-            instance=self.get_object(), data=request.data
-        )
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        team_sets = self.get_object().team_sets.order_by("-updated_at")
+        serializer = DisplayManyTeamSetSerializer(instance=team_sets, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(
