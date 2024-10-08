@@ -25,12 +25,21 @@ Installation:
    ```bash
    cp sample.env .env
    ```
-4. Run the project with:
+4. Create and activate virtual environment.
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+6. Apply database migrations.
+   ```bash
+   python manage.py migrate
+   ```
+8. Run the project from within the `src` directory with:
    ```bash
    python3 manage.py runserver
    ```
 
-Project Setup:
+Project Setup (only needs to be run the first time the project is run):
 
 1. Create a superuser in Django
    ```bash
