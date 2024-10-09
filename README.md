@@ -25,7 +25,7 @@ Installation:
    ```bash
    cp sample.env .env
    ```
-4. Create and activate virtual environment.
+4. (Optional) Create and activate virtual environment.
    ```bash
    python3 -m venv venv
    source venv/bin/activate
