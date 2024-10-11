@@ -28,7 +28,13 @@ def import_students_from_canvas(course: Course):
         for response in responses:
             # Assuming there is exactly 1 question and 1 submission per user
             # The correct answer is YES
-            opt_in = response.get_submission_questions()[0].correct
+            submission_question = response.get_submission_questions()[0]
+            opt_in = False
+            if hasattr(submission_question, "correct"):
+                opt_in = submission_question.correct
+            # This is temporary fix until we figure out the issue
+            elif hasattr(submission_question, "answer"):
+                opt_in = submission_question.answer == '9469'
             if opt_in:
                 opted_in_ids.add(response.user_id)
         students = [
