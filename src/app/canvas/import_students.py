@@ -1,4 +1,6 @@
 from typing import List
+
+from canvasapi.quiz import QuizQuestion
 from app.models.course import Course
 from canvasapi import Canvas
 from canvasapi.enrollment import Enrollment
@@ -24,6 +26,12 @@ def import_students_from_canvas(course: Course):
     if course.lms_opt_in_quiz_id is not None:
         opted_in_ids = set()
         opt_in_quiz = canvas_course.get_quiz(course.lms_opt_in_quiz_id)
+
+        questions: List[QuizQuestion] = list(opt_in_quiz.get_questions())
+        correct_answer_id = next(
+            a["id"] for a in questions[0].answers if a["weight"] == 100
+        )
+
         responses = list(opt_in_quiz.get_submissions())
         for response in responses:
             # Assuming there is exactly 1 question and 1 submission per user
@@ -32,9 +40,9 @@ def import_students_from_canvas(course: Course):
             opt_in = False
             if hasattr(submission_question, "correct"):
                 opt_in = submission_question.correct
-            # This is temporary fix until we figure out the issue
+            # This is fix for the weird case where the submission_question does not have a correct attribute
             elif hasattr(submission_question, "answer"):
-                opt_in = submission_question.answer == '9469'
+                opt_in = submission_question.answer == correct_answer_id
             if opt_in:
                 opted_in_ids.add(response.user_id)
         students = [

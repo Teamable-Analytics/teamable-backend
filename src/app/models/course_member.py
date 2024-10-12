@@ -102,7 +102,7 @@ class CourseMember(BaseModel):
         first_name: str,
         last_name: str,
         lms_id: str,
-        sis_user_id: str,
+        sis_user_id: str | None,
         course_id: str,
         role: UserRole,
     ):
