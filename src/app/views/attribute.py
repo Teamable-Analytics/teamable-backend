@@ -44,7 +44,6 @@ class AttributeViewSet(viewsets.ModelViewSet):
 
         return attribute_option
 
-
     @action(detail=False, methods=["post"])
     def delete_student_responses(self, request):
         attribute = get_object_or_404(Attribute, pk=request.data.get("attribute_id"))

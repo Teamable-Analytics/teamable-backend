@@ -85,7 +85,9 @@ class CourseViewSet(
     serializer_class = CourseViewSerializer
     permission_classes = [IsCourseInstructor]
 
-    def get_serializer_class(self) -> Type[CourseUpdateSerializer | CourseViewSerializer]:
+    def get_serializer_class(
+        self,
+    ) -> Type[CourseUpdateSerializer | CourseViewSerializer]:
         if self.action in ["update", "partial_update"]:
             return CourseUpdateSerializer
         return CourseViewSerializer
