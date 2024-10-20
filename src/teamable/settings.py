@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+from accounts.models import MyUser
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -165,7 +167,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-AUTH_USER_MODEL = "accounts.MyUser"
+AUTH_USER_MODEL = MyUser
 
 LOGGING = {
     "version": 1,

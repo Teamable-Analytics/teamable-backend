@@ -39,7 +39,7 @@ class CourseMember(BaseModel):
     lms_id = models.CharField(max_length=50, null=True, blank=True)
     sis_user_id = models.CharField(max_length=50, null=True, blank=True)
 
-    class Meta:
+    class Meta(BaseModel.Meta):
         constraints = [
             models.UniqueConstraint(
                 fields=["course", "lms_id"], name="unique_lms_id_in_course"
