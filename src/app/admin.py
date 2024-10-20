@@ -1,7 +1,12 @@
 from django.contrib import admin
 from django.http import JsonResponse
 
-from app.models.attribute import Attribute, AttributeOption, AttributeResponse
+from app.models.attribute import (
+    Attribute,
+    AttributeOption,
+    AttributeResponse,
+    AttributeTemplate,
+)
 from app.models.team import Team, TeamSet
 from .models import CourseMember, Course, Section, Organization
 
@@ -59,9 +64,21 @@ class TeamAdmin(admin.ModelAdmin):
     list_display = ["id", "slug", "name", "team_set"]
 
 
+class AttributeTemplateAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "question",
+        "value_type",
+        "max_selections",
+        "team_set_template",
+        "manage_type",
+    ]
+
+
 # Register your models here.
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Attribute, AttributeAdmin)
+admin.site.register(AttributeTemplate, AttributeTemplateAdmin)
 admin.site.register(AttributeOption, AttributeOptionAdmin)
 admin.site.register(AttributeResponse, AttributeResponseAdmin)
 admin.site.register(Section, SectionAdmin)

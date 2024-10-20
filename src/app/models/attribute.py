@@ -5,6 +5,7 @@ from app.models.base_models import BaseModel
 from app.models.course_member import CourseMember
 
 if TYPE_CHECKING:
+    from app.models.course import Course
     from django.db.models.manager import RelatedManager
 
 
@@ -19,23 +20,37 @@ class AttributeManageType(models.TextChoices):
     GRADE = "Grade", "Grade"
 
 
-class Attribute(BaseModel):
+class AttributeFields(BaseModel):
     name = models.TextField()
     question = models.TextField(blank=True)
     value_type = models.CharField(max_length=50, choices=AttributeValueType.choices)
     max_selections = models.IntegerField()
     team_set_template = models.ForeignKey(
-        "app.TeamSetTemplate",
+        "TeamSetTemplate",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
         # no related_name since it's not correct to say that a TeamTemplate has attributes
         # will mostly be accessing an Attribute's TeamSet
     )
+
+    manage_type = models.CharField(max_length=50, choices=AttributeManageType.choices)
+
+    class Meta:
+        abstract = True
+
+
+class AttributeTemplate(AttributeFields):
+    pass
+
+
+class Attribute(AttributeFields):
     course = models.ForeignKey(
         "app.Course", on_delete=models.CASCADE, related_name="attributes"
     )
-    manage_type = models.CharField(max_length=50, choices=AttributeManageType.choices)
+
+    if TYPE_CHECKING:
+        options: RelatedManager["AttributeOption"]
 
     def __str__(self) -> str:
         return f"({self.pk}) {self.name}"
@@ -51,8 +66,19 @@ class Attribute(BaseModel):
     def delete_student_responses(self):
         return self.options.all().delete()
 
-    if TYPE_CHECKING:
-        options: RelatedManager["AttributeOption"]
+    @classmethod
+    def create_from_template(
+        cls, attribute: "Attribute", course: "Course"
+    ) -> "Attribute":
+        return cls.objects.create(
+            course=course,
+            name=attribute.name,
+            question=attribute.question,
+            value_type=attribute.value_type,
+            max_selections=attribute.max_selections,
+            team_set_template=attribute.team_set_template,
+            manage_type=attribute.manage_type,
+        )
 
 
 class AttributeOption(BaseModel):
