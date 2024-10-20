@@ -3,7 +3,9 @@ canvasapi==3.2.0
 django-cors-headers==4.3.1
 django-extensions==3.2.3
 django-filter==23.5
+django-stubs==5.1.0
 Django==5.0
+djangorestframework-stubs==3.15.1
 djangorestframework==3.14.0
 Faker==24.2.0
 gunicorn==23.0.0
