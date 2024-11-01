@@ -67,10 +67,7 @@ def import_gradebook_attribute_from_canvas(course: Course):
     assignments: List[Assignment] = list(canvas_course.get_assignments())
 
     for assignment in assignments:
-        if assignment.grading_type != "points":
-            continue
-
-        if not assignment.points_possible:
+        if assignment.grading_type not in ["points", "percent"]:
             continue
 
         submissions = list(assignment.get_submissions())
