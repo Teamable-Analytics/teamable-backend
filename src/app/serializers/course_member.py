@@ -41,13 +41,8 @@ class DisplayCourseMemberSerializer(serializers.ModelSerializer):
 
 
 class CourseMemberListSerializer(serializers.ModelSerializer):
-    course = serializers.SerializerMethodField()
+    id = serializers.IntegerField(source='course.id')
+    name = serializers.CharField(source='course.name')
     class Meta:
         model = CourseMember
-        fields = ("course",)
-        
-    def get_course(self, obj):
-        return {
-            "id": obj.course.id,
-            "name": obj.course.name
-        }
+        fields = ("id", "name")
