@@ -24,5 +24,5 @@ class Relationship(BaseModel):
     )
     type = models.CharField(max_length=10, choices=RelationshipType.choices)
 
-    class Meta:
+    class Meta(BaseModel.Meta):
         unique_together = ["from_member", "to_member"]

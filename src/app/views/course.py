@@ -1,3 +1,4 @@
+from typing import Type
 from rest_framework import serializers, viewsets, status, mixins
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -84,10 +85,12 @@ class CourseViewSet(
     serializer_class = CourseViewSerializer
     permission_classes = [IsCourseInstructor]
 
-    def get_serializer_class(self):
+    def get_serializer_class(
+        self,
+    ) -> Type[CourseUpdateSerializer | CourseViewSerializer]:
         if self.action in ["update", "partial_update"]:
             return CourseUpdateSerializer
-        return super().get_serializer_class()
+        return CourseViewSerializer
 
     @action(
         detail=True,

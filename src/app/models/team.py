@@ -8,7 +8,7 @@ from app.models.course import Course
 from app.models.course_member import CourseMember, UserRole
 
 if TYPE_CHECKING:
-    from django.db.models.manager import RelatedManager
+    from django_stubs_ext.db.models.manager import RelatedManager
 
 
 class RequirementSubject(models.TextChoices):

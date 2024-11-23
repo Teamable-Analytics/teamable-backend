@@ -6,6 +6,6 @@ class IsCourseInstructor(permissions.IsAuthenticated):
         return True
 
     def has_object_permission(self, request, view, obj):
-        if request.user.is_superuser:
+        if request.user.is_superuser:  # type: ignore
             return True
         return obj.has_edit_permission(request.user)

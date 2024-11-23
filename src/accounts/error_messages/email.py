@@ -1,3 +1,7 @@
+from typing import Dict
+from django_stubs_ext import StrOrPromise
+
+
 class EMAIL:
     UNIQUE = (
         "A user with this email already exists. "
@@ -6,7 +10,7 @@ class EMAIL:
     REQUIRED = "Email is required."
     INVALID = "Email is invalid."
 
-    ERROR_MESSAGES = {
+    ERROR_MESSAGES: Dict[str, StrOrPromise] = {
         "required": REQUIRED,
         "null": REQUIRED,
         "blank": REQUIRED,

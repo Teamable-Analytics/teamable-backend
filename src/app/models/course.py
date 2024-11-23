@@ -5,12 +5,14 @@ from app.models.base_models import BaseModel
 from app.models.organization import Organization, LMSTypeOptions
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
-    from django.db.models.manager import RelatedManager
+    from django_stubs_ext.db.models.manager import RelatedManager
     from app.models.team import TeamSet
-    from app.models.course_member import CourseMember, UserRole
+    from app.models.course_member import CourseMember
     from app.models.attribute import Attribute
     from accounts.models import MyUser
+    from app.models.section import Section
 
 
 class Course(BaseModel):
@@ -24,6 +26,7 @@ class Course(BaseModel):
         team_sets: RelatedManager[TeamSet]
         course_members: RelatedManager[CourseMember]
         attributes: RelatedManager[Attribute]
+        sections: RelatedManager[Section]
 
     def __str__(self) -> str:
         return f"({self.pk}) {self.name}"

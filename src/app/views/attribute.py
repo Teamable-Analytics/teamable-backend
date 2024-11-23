@@ -45,41 +45,6 @@ class AttributeViewSet(viewsets.ModelViewSet):
         return attribute_option
 
     @action(detail=False, methods=["post"])
-    @transaction.atomic
-    def save_attribute(self, request):
-        attribute_serializer = AttributeSerializer(data=request.data)
-        if not attribute_serializer.is_valid():
-            raise ValidationError(attribute_serializer.errors)
-
-        course = get_object_or_404(Course, pk=request.data.get("course"))
-
-        attribute_id = request.data.get("id")
-        if attribute_id:
-            attribute = get_object_or_404(Attribute, pk=request.data.get("id"))
-            if (
-                request.data.get("value_type") != attribute.value_type
-                or request.data.get("max_selections") < attribute.max_selections
-            ):
-                attribute.delete_student_responses()
-
-            Attribute.objects.filter(pk=attribute_id).update(
-                **{**attribute_serializer.data, "course": course}
-            )
-        else:
-            attribute = Attribute.objects.create(
-                **{**attribute_serializer.data, "course": course}
-            )
-
-        attribute_options = request.data.get("options")
-        if attribute_options is not None:
-            for attribute_option in attribute_options:
-                self.save_attribute_option(attribute_option, attribute.id)
-        else:
-            raise FieldError("Options field is required")
-
-        return Response({"data": AttributeSerializer(attribute).data})
-
-    @action(detail=False, methods=["post"])
     def delete_student_responses(self, request):
         attribute = get_object_or_404(Attribute, pk=request.data.get("attribute_id"))
         num_deleted_attribute_responses = attribute.delete_student_responses()
