@@ -1,12 +1,13 @@
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from accounts.models import MyUser
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+
+import accounts.error_messages as ERROR_MESSAGES
+from accounts.models import MyUser
 from app.models.course_member import CourseMember, CourseMemberTokenError
 from app.serializers.course_member import CourseMemberListSerializer
-import accounts.error_messages as ERROR_MESSAGES
-from django.contrib.auth import authenticate
 
 
 class StudentMemberSerializer(serializers.ModelSerializer):
