@@ -1,20 +1,20 @@
-from typing import List
+from typing import List, Tuple
 
-from canvasapi.quiz import QuizQuestion
-from app.models.course import Course
 from canvasapi import Canvas
 from canvasapi.enrollment import Enrollment
+from canvasapi.quiz import QuizQuestion
 
+from app.models.course import Course
 from app.models.course_member import CourseMember, UserRole
 from app.models.organization import LMSTypeOptions
 
 
-def import_students_from_canvas(course: Course):
+def import_students_from_canvas(course: Course) -> Tuple[int, int]:
     if (
         course.organization is None
         or course.organization.lms_type != LMSTypeOptions.CANVAS
     ):
-        return
+        return 0, 0
 
     canvas = Canvas(course.organization.lms_api_url, course.lms_access_token)
     canvas_course = canvas.get_course(course.lms_course_id)
@@ -22,6 +22,7 @@ def import_students_from_canvas(course: Course):
     students: List[Enrollment] = list(
         canvas_course.get_enrollments(type=["StudentEnrollment"])
     )
+    total_students = len(students)
 
     if course.lms_opt_in_quiz_id is not None:
         opted_in_ids = set()
@@ -65,3 +66,5 @@ def import_students_from_canvas(course: Course):
             course_id=course.pk,
             role=UserRole.STUDENT,
         )
+
+    return total_students, len(students)

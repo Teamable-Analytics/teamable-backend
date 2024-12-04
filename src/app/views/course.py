@@ -1,8 +1,10 @@
 from typing import Type
-from rest_framework import serializers, viewsets, status, mixins
+
+from rest_framework import mixins, serializers, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.decorators import action
+
 from app.canvas.export_team import export_team_to_canvas
 from app.canvas.import_attribute import import_gradebook_attribute_from_canvas
 from app.canvas.import_students import import_students_from_canvas
@@ -17,10 +19,8 @@ from app.permissions import IsCourseInstructor
 from app.serializers.attribute import AttributeSerializer
 from app.serializers.course import CourseUpdateSerializer, CourseViewSerializer
 from app.serializers.course_member import CourseMemberSerializer
-from app.serializers.teams import (
-    DisplayManyTeamSetSerializer,
-    DisplaySingleTeamSetSerializer,
-)
+from app.serializers.teams import (DisplayManyTeamSetSerializer,
+                                   DisplaySingleTeamSetSerializer)
 from app.services.team_generation import generate_teams
 
 
@@ -240,4 +240,53 @@ class CourseViewSet(
         return Response(
             AttributeSerializer(grade_attributes, many=True).data,
             status=status.HTTP_200_OK,
+        )
+        
+    @action(
+        detail=True, 
+        methods=["get"],
+        serializer_class=CourseMemberSerializer,
+        pagination_class=ExamplePagination,
+        permission_classes=[IsCourseInstructor],
+        url_path="previous-attributes",
+        )
+    def previous_team_attributes(self, request, pk=None):
+        course = self.get_object()
+
+        latest_team_set = TeamSet.objects.filter(course=course).order_by("-updated_at").first()
+        if not latest_team_set:
+            return Response({"error": "No team sets found for this course"}, status=404)
+
+        attributes_used = Attribute.objects.filter(
+            teamrequirement__team__in=latest_team_set.teams.all()
+        ).distinct()
+
+        serialized_attributes = AttributeSerializer(attributes_used, many=True).data
+
+        response_data = {
+            "team_set_name": latest_team_set.name,
+            "formation_date": latest_team_set.updated_at,
+            "total_attributes_used": attributes_used.count(),
+            "attributes": serialized_attributes,
+        }
+
+        return Response(response_data)
+    
+    
+    @action(
+        detail=True,
+        methods=["get"],
+        permission_classes=[IsCourseInstructor],
+        url_path="student-counts",
+    )
+    def get_student_counts(self, request, pk=None):
+        course = self.get_object()
+        total_students, opted_in_students = import_students_from_canvas(course)
+
+        return Response(
+            {
+                "total_students": total_students,
+                "opted_in_students": opted_in_students,
+            },
+            status=200
         )
