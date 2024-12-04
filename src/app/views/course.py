@@ -19,8 +19,10 @@ from app.permissions import IsCourseInstructor
 from app.serializers.attribute import AttributeSerializer
 from app.serializers.course import CourseUpdateSerializer, CourseViewSerializer
 from app.serializers.course_member import CourseMemberSerializer
-from app.serializers.teams import (DisplayManyTeamSetSerializer,
-                                   DisplaySingleTeamSetSerializer)
+from app.serializers.teams import (
+    DisplayManyTeamSetSerializer,
+    DisplaySingleTeamSetSerializer,
+)
 from app.services.team_generation import generate_teams
 
 
@@ -241,19 +243,21 @@ class CourseViewSet(
             AttributeSerializer(grade_attributes, many=True).data,
             status=status.HTTP_200_OK,
         )
-        
+
     @action(
-        detail=True, 
+        detail=True,
         methods=["get"],
         serializer_class=CourseMemberSerializer,
         pagination_class=ExamplePagination,
         permission_classes=[IsCourseInstructor],
         url_path="previous-attributes",
-        )
+    )
     def previous_team_attributes(self, request, pk=None):
         course = self.get_object()
 
-        latest_team_set = TeamSet.objects.filter(course=course).order_by("-updated_at").first()
+        latest_team_set = (
+            TeamSet.objects.filter(course=course).order_by("-updated_at").first()
+        )
         if not latest_team_set:
             return Response({"error": "No team sets found for this course"}, status=404)
 
@@ -271,8 +275,7 @@ class CourseViewSet(
         }
 
         return Response(response_data)
-    
-    
+
     @action(
         detail=True,
         methods=["get"],
@@ -288,5 +291,5 @@ class CourseViewSet(
                 "total_students": total_students,
                 "opted_in_students": opted_in_students,
             },
-            status=200
+            status=200,
         )
