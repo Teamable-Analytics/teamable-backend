@@ -2,7 +2,8 @@ import logging
 import os
 
 from django.http.response import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect, reverse
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.template import loader
 from django.template.exceptions import TemplateDoesNotExist
 from django.utils.crypto import get_random_string
