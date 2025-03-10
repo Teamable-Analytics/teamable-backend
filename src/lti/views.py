@@ -1,5 +1,6 @@
 from django.urls import reverse
-from pylti1p3.contrib.django import DjangoOIDCLogin, DjangoMessageLaunch
+from pylti1p3.contrib.django.oidc_login import DjangoOIDCLogin
+from pylti1p3.contrib.django.message_launch import DjangoMessageLaunch
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout as auth_logout, login as auth_login
@@ -52,7 +53,8 @@ def launch(request):
     message_launch_data = message_launch.get_launch_data()
 
     # check if instructor (only instructors can LTI launch at this time)
-    roles = message_launch_data.get("https://purl.imsglobal.org/spec/lti/claim/roles")
+    roles = message_launch_data.get("https://purl.imsglobal.org/spec/lti/claim/roles", [])
+
     has_admin_role = (
         "http://purl.imsglobal.org/vocab/lis/v2/membership#Administrator" in roles
     )
@@ -103,7 +105,7 @@ def launch(request):
     auth_user.set_unusable_password()
     auth_user.save()
 
-    auth_user.backend = "django.contrib.auth.backends.ModelBackend"
+    auth_user.backend = "django.contrib.auth.backends.ModelBackend"  # type: ignore
     auth_login(request, auth_user)
 
     # make the authentication token for the frontend
@@ -135,5 +137,5 @@ def launch(request):
     course_member.save()
 
     return redirect(
-        f"{reverse('canvas-oauth-initiate')}?redirect_path=/course/{course.id}"
+        f"{reverse('canvas-oauth-initiate')}?redirect_path=/course/{course.pk}"
     )

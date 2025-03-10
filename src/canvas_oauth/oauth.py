@@ -66,6 +66,10 @@ def handle_missing_token(request):
         redirect_uri=oauth_redirect_uri,
         state=oauth_request_state,
     )
+
+    if authorize_url is None:
+        raise Exception("Invalid authorize_url")
+
     return HttpResponseRedirect(authorize_url)
 
 
