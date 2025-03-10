@@ -1,22 +1,23 @@
 from typing import List
 
 from canvasapi.quiz import QuizQuestion
+
+from app.canvas.canvas_api import init_canvas
 from app.models.course import Course
-from canvasapi import Canvas
 from canvasapi.enrollment import Enrollment
 
 from app.models.course_member import CourseMember, UserRole
 from app.models.organization import LMSTypeOptions
 
 
-def import_students_from_canvas(course: Course):
+def import_students_from_canvas(request, course: Course):
     if (
         course.organization is None
         or course.organization.lms_type != LMSTypeOptions.CANVAS
     ):
         return
 
-    canvas = Canvas(course.organization.lms_api_url, course.lms_access_token)
+    canvas = init_canvas(request, course.organization)
     canvas_course = canvas.get_course(course.lms_course_id)
 
     students: List[Enrollment] = list(

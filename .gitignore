@@ -13,3 +13,6 @@ venv/
 logs/
 .env
 debug.log
+
+src/lti/config/
+teamable_keys_needed/

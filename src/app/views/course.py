@@ -100,7 +100,7 @@ class CourseViewSet(
     )
     def import_students_from_lms(self, request, pk=None):
         course = self.get_object()
-        import_students_from_canvas(course)
+        import_students_from_canvas(request, course=course)
         return Response(status=status.HTTP_200_OK)
 
     @action(
@@ -118,7 +118,7 @@ class CourseViewSet(
         # Pylance doesn't know that validated_data is valid after is_valid() check
         team_set = serializer.validated_data["team_set"]  # type: ignore
 
-        export_team_to_canvas(team_set)
+        export_team_to_canvas(request, team_set=team_set)
         return Response(status=status.HTTP_200_OK)
 
     @action(
@@ -129,7 +129,7 @@ class CourseViewSet(
     )
     def create_opt_in_quiz_lms(self, request, pk=None):
         course = self.get_object()
-        create_opt_in_quiz_canvas(course)
+        create_opt_in_quiz_canvas(request, course=course)
         return Response(status=status.HTTP_200_OK)
 
     @action(
@@ -155,7 +155,7 @@ class CourseViewSet(
     )
     def import_gradebook_attribute_from_lms(self, request, pk=None):
         course = self.get_object()
-        import_gradebook_attribute_from_canvas(course)
+        import_gradebook_attribute_from_canvas(request, course=course)
         return Response(status=status.HTTP_200_OK)
 
     @action(

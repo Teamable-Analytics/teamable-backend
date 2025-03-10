@@ -1,13 +1,14 @@
-from canvasapi import Canvas, exceptions
+from canvasapi import exceptions
 from canvasapi.course import Course
 from canvasapi.group import GroupCategory
 
+from app.canvas.canvas_api import init_canvas
 from app.models.course_member import CourseMember
 from app.models.organization import LMSTypeOptions
 from app.models.team import TeamSet
 
 
-def export_team_to_canvas(team_set: TeamSet):
+def export_team_to_canvas(request, team_set: TeamSet):
     course = team_set.course
     if (
         course.organization is None
@@ -15,7 +16,7 @@ def export_team_to_canvas(team_set: TeamSet):
     ):
         return
 
-    canvas = Canvas(course.organization.lms_api_url, course.lms_access_token)
+    canvas = init_canvas(request, course.organization)
     canvas_course = canvas.get_course(course.lms_course_id)
 
     group_category = create_group_category_with_unique_name(
