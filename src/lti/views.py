@@ -53,7 +53,9 @@ def launch(request):
     message_launch_data = message_launch.get_launch_data()
 
     # check if instructor (only instructors can LTI launch at this time)
-    roles = message_launch_data.get("https://purl.imsglobal.org/spec/lti/claim/roles", [])
+    roles = message_launch_data.get(
+        "https://purl.imsglobal.org/spec/lti/claim/roles", []
+    )
 
     has_admin_role = (
         "http://purl.imsglobal.org/vocab/lis/v2/membership#Administrator" in roles
