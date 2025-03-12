@@ -24,7 +24,7 @@ mypy-extensions==1.0.0
 packaging==24.2
 pathspec==0.12.1
 platformdirs==4.3.6
-psycopg2-binary==2.9.9
+psycopg2==2.9.9
 pycparser==2.22
 PyJWT==2.8.0
 PyLTI1p3==2.0.0
