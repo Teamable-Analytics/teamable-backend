@@ -96,6 +96,13 @@ def launch(request):
         "https://purl.imsglobal.org/spec/lti/claim/custom", {}
     ).get("canvas_user_id")
 
+    if not canvas_course_id or not canvas_user_id:
+        raise Exception(
+            "Missing canvas_course_id/canvas_user_id custom claims. Check "
+            "that the custom_fields block is configured on the Canvas "
+            "developer key"
+        )
+
     auth_user, created = MyUser.objects.get_or_create(
         # Make the username unique to the launch ISS, so different
         # institution's Canvas instance creates unique usernames
