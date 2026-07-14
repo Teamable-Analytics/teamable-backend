@@ -15,12 +15,6 @@ from lti import lti_util
 from pprint import pprint
 
 
-# do not require deployments in config
-class ExtendedDjangoMessageLaunch(DjangoMessageLaunch):
-    def validate_deployment(self):
-        return self
-
-
 @csrf_exempt
 def login(request):
     if not settings.LTI_ENABLED:
@@ -48,7 +42,7 @@ def launch(request):
         raise Exception("LTI disabled")
 
     tool_conf = lti_util.get_tool_conf()
-    message_launch = ExtendedDjangoMessageLaunch(request, tool_conf)
+    message_launch = DjangoMessageLaunch(request, tool_conf)
 
     message_launch_data = message_launch.get_launch_data()
 
