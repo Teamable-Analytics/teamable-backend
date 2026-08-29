@@ -35,6 +35,13 @@ def login(request):
     return oidc_login.redirect(target_link_uri)
 
 
+class ExtendedDjangoMessageLaunch(DjangoMessageLaunch):
+    def validate_deployment(self):
+        if settings.DEBUG:
+            return self
+        return super().validate_deployment()
+
+
 @csrf_exempt
 @require_POST
 def launch(request):
@@ -42,7 +49,7 @@ def launch(request):
         raise Exception("LTI disabled")
 
     tool_conf = lti_util.get_tool_conf()
-    message_launch = DjangoMessageLaunch(request, tool_conf)
+    message_launch = ExtendedDjangoMessageLaunch(request, tool_conf)
 
     message_launch_data = message_launch.get_launch_data()
 
