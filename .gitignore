@@ -11,7 +11,8 @@ srv/
 
 venv/
 logs/
-.env
+.env*
+.DS_Store
 debug.log
 
 src/lti/config/
