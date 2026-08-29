@@ -17,8 +17,8 @@ class AttributeViewSet(viewsets.ModelViewSet):
     queryset = Attribute.objects.all()
     serializer_class = AttributeSerializer
     filter_backends = [
-        filters.DjangoFilterBackend
-    ]  # pyright: ignore[reportAssignmentType]
+        filters.DjangoFilterBackend  # pyright: ignore[reportAssignmentType]
+    ]
     filterset_fields = ["course_id"]
 
     def save_attribute_option(
