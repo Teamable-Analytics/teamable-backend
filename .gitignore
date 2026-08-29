@@ -11,5 +11,9 @@ srv/
 
 venv/
 logs/
-.env
+.env*
+.DS_Store
 debug.log
+
+src/lti/config/
+teamable_keys_needed/

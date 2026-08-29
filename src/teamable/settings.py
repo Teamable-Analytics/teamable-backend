@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+from lti.lti_util import is_lti_enabled
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,6 +32,7 @@ DEBUG = os.environ.get("DEBUG", "FALSE") == "TRUE"
 
 if DEBUG:
     ALLOWED_HOSTS = ["*"]
+    CSRF_TRUSTED_ORIGINS = ["http://localhost:8002"]
 else:
     ALLOWED_HOSTS = os.environ["SERVER_NAME"].split()
     CSRF_TRUSTED_ORIGINS = list(
@@ -53,6 +56,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "accounts",
     "app",
+    "lti",
+    "canvas_oauth",
 ]
 
 MIDDLEWARE = [
@@ -64,6 +69,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "canvas_oauth.middleware.OAuthMiddleware",
 ]
 
 ROOT_URLCONF = "teamable.urls"
@@ -86,6 +92,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "teamable.wsgi.application"
 
+SESSION_COOKIE_SAMESITE = None
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -166,6 +173,14 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = "accounts.MyUser"
+
+# Canvas API & OAuth
+CANVAS_BASE_URL = os.environ.get("CANVAS_BASE_URL")
+CANVAS_OAUTH_CLIENT_ID = os.environ.get("CANVAS_OAUTH_CLIENT_ID")
+CANVAS_OAUTH_CLIENT_SECRET = os.environ.get("CANVAS_OAUTH_CLIENT_SECRET")
+CANVAS_OAUTH_CANVAS_DOMAIN = CANVAS_BASE_URL
+
+LTI_ENABLED = is_lti_enabled()
 
 LOGGING = {
     "version": 1,

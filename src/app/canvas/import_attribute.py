@@ -1,8 +1,8 @@
-from typing import Dict, List
+from typing import List
 
-from canvasapi import Canvas
-from canvasapi.assignment import Assignment, AssignmentGroup
+from canvasapi.assignment import Assignment
 
+from app.canvas.canvas_api import init_canvas
 from app.models.attribute import (
     Attribute,
     AttributeManageType,
@@ -13,7 +13,6 @@ from app.models.attribute import (
 from app.models.course import Course
 from app.models.course_member import UserRole
 from app.models.organization import LMSTypeOptions
-from app.views import attribute
 
 ABOVE_AVERAGE_LABEL = "Above Average"
 BELOW_AVERAGE_LABEL = "Below Average"
@@ -53,14 +52,14 @@ def get_or_create_gradebook_attribute(course: Course, assignment: Assignment):
 
 
 # Study buddy specific function
-def import_gradebook_attribute_from_canvas(course: Course):
+def import_gradebook_attribute_from_canvas(request, course: Course):
     if (
         course.organization is None
         or course.organization.lms_type != LMSTypeOptions.CANVAS
     ):
         return
 
-    canvas = Canvas(course.organization.lms_api_url, course.lms_access_token)
+    canvas = init_canvas(request, course.organization)
     canvas_course = canvas.get_course(course.lms_course_id)
 
     course_members = course.course_members.filter(role=UserRole.STUDENT)

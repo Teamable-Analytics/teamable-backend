@@ -7,4 +7,6 @@ urlpatterns = [
     path("api/v1/", include("app.urls")),
     path("admin/", admin.site.urls),
     path("api/auth/", include("rest_framework.urls")),
+    path("lti/", include("lti.urls")),
+    path("oauth/", include("canvas_oauth.urls")),
 ]

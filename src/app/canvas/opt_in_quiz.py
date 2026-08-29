@@ -1,17 +1,16 @@
-from canvasapi import Canvas
-
+from app.canvas.canvas_api import init_canvas
 from app.models.course import Course
 from app.models.organization import LMSTypeOptions
 
 
-def create_opt_in_quiz_canvas(course: Course):
+def create_opt_in_quiz_canvas(request, course: Course):
     if (
         course.organization is None
         or course.organization.lms_type != LMSTypeOptions.CANVAS
     ):
         return
 
-    canvas = Canvas(course.organization.lms_api_url, course.lms_access_token)
+    canvas = init_canvas(request, course.organization)
     canvas_course = canvas.get_course(course.lms_course_id)
 
     quiz = canvas_course.create_quiz(
