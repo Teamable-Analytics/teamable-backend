@@ -30,6 +30,9 @@ SECRET_KEY = "django-insecure-^jya_!qbokzbn!z0rh7ywl20o#si-olt^**mx(nf8-xzm(n&$9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "FALSE") == "TRUE"
 
+# Needed so that the LTI -> Canvas OAuth redirect doesn't get switched to http via the server's nginx config
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 if DEBUG:
     ALLOWED_HOSTS = ["*"]
     CSRF_TRUSTED_ORIGINS = ["http://localhost:8002"]
@@ -38,7 +41,6 @@ else:
     CSRF_TRUSTED_ORIGINS = list(
         map(lambda x: f"https://{x}", os.environ["SERVER_NAME"].split())
     )
-
 
 # Application definition
 
@@ -119,7 +121,6 @@ else:
         }
     }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -138,7 +139,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -149,7 +149,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
