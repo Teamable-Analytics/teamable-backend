@@ -11,7 +11,11 @@ from rest_framework.authtoken.models import Token
 
 from canvas_oauth import canvas, settings
 from canvas_oauth.models import CanvasOAuth2Token
-from canvas_oauth.exceptions import MissingTokenError, InvalidOAuthStateError
+from canvas_oauth.exceptions import (
+    MissingTokenError,
+    InvalidOAuthStateError,
+    InvalidGrantError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -96,11 +100,13 @@ def oauth_callback(request):
         code=code,
     )
 
-    CanvasOAuth2Token.objects.create(
+    CanvasOAuth2Token.objects.update_or_create(
         user=request.user,
-        access_token=access_token,
-        expires=expires,
-        refresh_token=refresh_token,
+        defaults={
+            "access_token": access_token,
+            "expires": expires,
+            "refresh_token": refresh_token,
+        },
     )
 
     return redirect(request.session["canvas_oauth_initial_uri"])
@@ -134,13 +140,20 @@ def refresh_oauth_token(request):
 
     # Get the new access token and expiration date via
     # a refresh token grant
-    oauth_token.access_token, oauth_token.expires, _ = canvas.get_access_token(
-        grant_type="refresh_token",
-        client_id=settings.CANVAS_OAUTH_CLIENT_ID,
-        client_secret=settings.CANVAS_OAUTH_CLIENT_SECRET,
-        redirect_uri=request.build_absolute_uri(reverse("canvas-oauth-callback")),
-        refresh_token=oauth_token.refresh_token,
-    )
+    try:
+        oauth_token.access_token, oauth_token.expires, _ = canvas.get_access_token(
+            grant_type="refresh_token",
+            client_id=settings.CANVAS_OAUTH_CLIENT_ID,
+            client_secret=settings.CANVAS_OAUTH_CLIENT_SECRET,
+            redirect_uri=request.build_absolute_uri(reverse("canvas-oauth-callback")),
+            refresh_token=oauth_token.refresh_token,
+        )
+    except InvalidGrantError:
+        # Canvas no longer recognizes the refresh token (revoked, key reset, etc.),
+        # so drop it and send the user back through authorization
+        logger.warning("Refresh token rejected for user %s", request.user.pk)
+        oauth_token.delete()
+        raise MissingTokenError("Refresh token rejected for user %s" % request.user.pk)
 
     # Update the model with new token and expiration
     oauth_token.save()
