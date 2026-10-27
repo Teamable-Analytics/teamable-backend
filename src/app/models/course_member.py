@@ -106,14 +106,14 @@ class CourseMember(BaseModel):
         course_id: str,
         role: UserRole,
     ):
+        # lms_id is only unique within a course. The linked user and role are
+        # owned by the LTI launch, so an existing member keeps them.
         course_member, created = cls.objects.update_or_create(
+            course_id=course_id,
             lms_id=lms_id,
             defaults={
-                "user_id": user_id,
                 "first_name": first_name,
                 "last_name": last_name,
-                "course_id": course_id,
-                "role": role,
                 "sis_user_id": sis_user_id,
             },
             create_defaults={

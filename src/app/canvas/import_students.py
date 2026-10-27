@@ -51,12 +51,13 @@ def import_students_from_canvas(request, course: Course):
         ]
 
     for student in students:
-        last_name, first_name = student.user["sortable_name"].split(",")
+        # sortable_name is "Last, First", but may have no comma (or several)
+        last_name, _, first_name = student.user["sortable_name"].partition(",")
 
         CourseMember.upsert_course_member(
             user_id=None,
-            first_name=first_name,
-            last_name=last_name,
+            first_name=first_name.strip(),
+            last_name=last_name.strip(),
             lms_id=student.user["id"],
             sis_user_id=(
                 student.sis_user_id
