@@ -33,9 +33,7 @@ class UpsertCourseMemberTests(TestCase):
         # Re-importing must not fail now that the lms_id exists twice
         _, created = self.upsert(self.course_b, first_name="Augusta")
         self.assertFalse(created)
-        self.assertEqual(
-            self.course_b.course_members.get().first_name, "Augusta"
-        )
+        self.assertEqual(self.course_b.course_members.get().first_name, "Augusta")
         self.assertEqual(self.course_a.course_members.get().first_name, "Ada")
 
     def test_existing_member_keeps_user_and_role(self):
